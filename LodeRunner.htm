@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="LodeRunner">
+  
+  <title>Lode Runner par Jérémie Lapointe & Phillipe Doyon</title>
+  <link rel="stylesheet" type="text/css" href="LodeRunnerStyles.css" />   
+  <script src="LodeRunnerScripts.js"></script>
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+  
+   </script>
+</head>
+
+<body onload="dessinerHorloge()">
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p> 
+            <span class="sTitreApp">
+                Lode Runner<br />
+            </span> par 
+            <span class="sAuteurApp">
+                Jérémie Lapointe & Phillipe Doyon
+            </span> 
+       </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <!--utilise des cellules et bordures de 30x30 plus grand multiple de 10 qui fit sur un ecrand 720p  -->	
+        <!--28*30= 840 ...840 + 60(30px de bordure chaque cote)=900  -->
+        <!--17*30=  510 ...510 + 60(30px de bordure hat et bas)=570...570+ 90 px tableau de score = 660  -->
+	   <canvas id="monCanvas" width="900" height="660">
+		    Votre navigateur ne supporte pas la balise canvas
+	    </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a> 
+ 			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+	           Département d'informatique du Cégep Gérald-Godin
+	        </a> 
+            <br />
+            &copy; 2018
+        </p>
+    </footer>
+</body>
+</html>
