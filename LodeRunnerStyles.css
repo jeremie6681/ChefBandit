@@ -1,6 +1,6 @@
 ﻿body { font-family:arial; font-size:10pt; color:black; }
 .sTexteCentre { text-align:center; }
-.sLargeurDiv { width:640px; padding-left:10px; padding-right:10px;}
+.sLargeurDiv { width:900px; padding-left:10px; padding-right:10px;}
 
 .sEntete {margin-bottom:5px;  border-bottom-width:2px;  border-bottom-style:solid; }
 .sCorps {}
