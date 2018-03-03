@@ -10,15 +10,18 @@
   <script src="LodeRunnerScripts.js"></script>
   <!-- Code JavaScript local -->
   <script type="text/javascript">
-     
+        var objCanvas = null;
+        var objC2D = null;
+        
         function dessiner() {
-        var objCanvas = document.getElementById('monCanvas');
-        var objC2D = objCanvas.getContext('2d');
+        objCanvas = document.getElementById('monCanvas');
+        objC2D = objCanvas.getContext('2d');
          objC2D.fillStyle = 'black';
          objC2D.beginPath();
          objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
-         initTableau();
-                    
+         dessinerTableau(objC2D); 
+         initMurs() ;
+         dessinerMurs(objC2D);          
 	}
 
    </script>
