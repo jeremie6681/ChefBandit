@@ -1,9 +1,13 @@
 //lodeRunnerScripts.js
 //philippe Doyon & jeremie Lapointe
 // 2 mars 2018
+
+var objCanvas = null;
+var objC2D = null;
+
 var intTailleCases = 30 ;
 var tabObjMurs = null;
-    var tableau = [
+var tableau = [
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,3,3,3,1,0,0,0,0,1,4],
@@ -33,6 +37,24 @@ var tabObjMurs = null;
         [0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,1,4],
         [0,0,0,0,1,0,0,1,0,0,0,0,0,3,3,1,4]
      ];
+
+function initAnimation(Canvas){
+    objCanvas = Canvas;
+    objC2D = objCanvas.getContext('2d');
+
+    initMurs();
+    dessiner();
+}
+
+function dessiner() {
+    
+    objC2D.fillStyle = 'black';
+    objC2D.beginPath();
+    objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
+    
+    dessinerTableau(objC2D); 
+    dessinerMurs(objC2D);          
+}
 
 function dessinerTableau(objC2d){
   

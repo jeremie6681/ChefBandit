@@ -7,28 +7,10 @@
     
     <title>Lode Runner par Jérémie Lapointe & Philippe Doyon</title>
     <link rel="stylesheet" type="text/css" href="LodeRunnerStyles.css" />   
-    <script src="LodeRunnerScripts.js"></script>
-    <!-- Code JavaScript local -->
-    <script type="text/javascript">
-            var objCanvas = null;
-            var objC2D = null;
-            
-            function dessiner() {
-                objCanvas = document.getElementById('monCanvas');
-                objC2D = objCanvas.getContext('2d');
-                objC2D.fillStyle = 'black';
-                objC2D.beginPath();
-                objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
-                dessinerTableau(objC2D); 
-                initMurs() ;
-                dessinerMurs(objC2D);          
-            }
-
-    </script>
+    <script type="text/javascript" src="LodeRunnerScripts.js"></script>
+    
 </head>
-
-
-<body onload="dessiner()">
+<body onload="initAnimation(objCanvas)">
     <header class="sTexteCentre sLargeurDiv sEntete">
         <p> 
             <span class="sTitreApp">
@@ -63,3 +45,7 @@
     </footer>
 </body>
 </html>
+<!-- Code JavaScript local -->
+<script type="text/javascript">
+    var objCanvas = document.getElementById('monCanvas');
+</script>
