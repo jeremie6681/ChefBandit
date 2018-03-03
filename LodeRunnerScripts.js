@@ -43,6 +43,7 @@ function initAnimation(Canvas){
     objC2D = objCanvas.getContext('2d');
 
     initMurs();
+    initPointage();
     dessiner();
 }
 
@@ -52,30 +53,31 @@ function dessiner() {
     objC2D.beginPath();
     objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
     
-    dessinerTableau(objC2D); 
-    dessinerMurs(objC2D);          
+    dessinerTableau(); 
+    dessinerMurs();
+    dessinerPointage();          
 }
 
-function dessinerTableau(objC2d){
+function dessinerTableau(){
   
     for (var intCasesX =0;intCasesX<28;intCasesX++){
         for (var intCasesY =0;intCasesY<17;intCasesY++){
             switch(tableau[intCasesX][intCasesY]){
                 case 1:
-                    objC2d.fillStyle='red';
-                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.fillStyle='red';
+                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                 break;
                 case 2:
-                    objC2d.fillStyle='blue';
-                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.fillStyle='blue';
+                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                 break;
                 case 3:
-                    objC2d.fillStyle='yellow';
-                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.fillStyle='yellow';
+                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                 break;
                 case 4:
-                     objC2d.fillStyle='grey';
-                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                     objC2D.fillStyle='grey';
+                     objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                 break;
             }
         }
@@ -121,7 +123,7 @@ function dessinerTableau(objC2d){
         tabObjMurs.push(objMur);
     }
 
-    function dessinerMurs(objC2D){
+    function dessinerMurs(){
         objC2D.save();
 	    objC2D.globalAlpha = 0.8;
 
@@ -153,7 +155,7 @@ function dessinerTableau(objC2d){
         objPointage.vies = 5;
         objPointage.niveau =1;
     }
-    function dessinerPointage(objC2D){
+    function dessinerPointage(){
         objC2D.save();
         var strTextePointage= "Vies : "+objPointage.vies + "  Niveau : " + objPointage.niveau + " Pointage : " + objPointage.score +" Temps : "+objPointage.tempsNiveau;
         
