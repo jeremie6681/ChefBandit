@@ -7,13 +7,7 @@ var objC2D = null;
 
 var intTailleCases = 30 ;
 var tabObjMurs = null;
-<<<<<<< HEAD
 var tableau = [
-=======
-var objPointage = null;
-
-    var tableau = [
->>>>>>> d880428c9bf14c0aff84c613895218eaf064194d
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,3,3,3,1,0,0,0,0,1,4],
