@@ -14,14 +14,16 @@
         var objC2D = null;
         
         function dessiner() {
-        objCanvas = document.getElementById('monCanvas');
+       objCanvas = document.getElementById('monCanvas');
         objC2D = objCanvas.getContext('2d');
          objC2D.fillStyle = 'black';
          objC2D.beginPath();
          objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
          dessinerTableau(objC2D); 
          initMurs() ;
-         dessinerMurs(objC2D);          
+         dessinerMurs(objC2D); 
+         initPointage();
+         dessinerPointage(objC2D) ;        
 	}
 
    </script>
