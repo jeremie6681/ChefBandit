@@ -2,29 +2,29 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="description" content="LodeRunner">
-  
-  <title>Lode Runner par Jérémie Lapointe & Philippe Doyon</title>
-  <link rel="stylesheet" type="text/css" href="LodeRunnerStyles.css" />   
-  <script src="LodeRunnerScripts.js"></script>
-  <!-- Code JavaScript local -->
-  <script type="text/javascript">
-        var objCanvas = null;
-        var objC2D = null;
-        
-        function dessiner() {
-        objCanvas = document.getElementById('monCanvas');
-        objC2D = objCanvas.getContext('2d');
-         objC2D.fillStyle = 'black';
-         objC2D.beginPath();
-         objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
-         dessinerTableau(objC2D); 
-         initMurs() ;
-         dessinerMurs(objC2D);          
-	}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="LodeRunner">
+    
+    <title>Lode Runner par Jérémie Lapointe & Philippe Doyon</title>
+    <link rel="stylesheet" type="text/css" href="LodeRunnerStyles.css" />   
+    <script src="LodeRunnerScripts.js"></script>
+    <!-- Code JavaScript local -->
+    <script type="text/javascript">
+            var objCanvas = null;
+            var objC2D = null;
+            
+            function dessiner() {
+                objCanvas = document.getElementById('monCanvas');
+                objC2D = objCanvas.getContext('2d');
+                objC2D.fillStyle = 'black';
+                objC2D.beginPath();
+                objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
+                dessinerTableau(objC2D); 
+                initMurs() ;
+                dessinerMurs(objC2D);          
+            }
 
-   </script>
+    </script>
 </head>
 
 
