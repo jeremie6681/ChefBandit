@@ -39,9 +39,20 @@ function initTableau(objC2d){
             switch(tableau[intCasesX][intCasesY]){
                 case 1:
                     objC2d.fillStyle='red';
-                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases)
+                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                 break;
-            
+                case 2:
+                    objC2d.fillStyle='blue';
+                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                break;
+                case 3:
+                    objC2d.fillStyle='yellow';
+                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                break;
+                case 4:
+                     objC2d.fillStyle='grey';
+                    objC2d.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                break;
             }
         }
     }
