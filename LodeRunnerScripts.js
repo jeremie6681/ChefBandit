@@ -7,9 +7,6 @@ var objC2D = null;
 
 var intTailleCases = 30 ;
 var tabObjMurs = null;
-var objPointage = null;
-
-    var tableau = [
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,3,3,3,1,0,0,0,0,1,4],
