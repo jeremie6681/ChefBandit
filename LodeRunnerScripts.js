@@ -1,6 +1,6 @@
 //lodeRunnerScripts.js
 //philippe Doyon & jeremie Lapointe
-// mars 2018
+// 2 mars 2018
 var intTailleCases = 30 ;
     var tableau = [
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
