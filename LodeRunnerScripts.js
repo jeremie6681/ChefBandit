@@ -34,7 +34,8 @@ var objPointage = null;
         [0,0,0,0,3,3,3,1,0,0,0,0,0,1,0,1,4],
         [0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,1,4],
         [0,0,0,0,1,0,0,1,0,0,0,0,0,3,3,1,4]
-     ]
+     ];
+
 function dessinerTableau(objC2d){
   
     for (var intCasesX =0;intCasesX<28;intCasesX++){
@@ -99,6 +100,7 @@ function dessinerTableau(objC2d){
         objMur.strCouleur = 'darkgrey';
         tabObjMurs.push(objMur);
     }
+
     function dessinerMurs(objC2D){
         objC2D.save();
 	    objC2D.globalAlpha = 0.8;
