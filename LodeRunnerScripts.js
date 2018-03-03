@@ -7,7 +7,13 @@ var objC2D = null;
 
 var intTailleCases = 30 ;
 var tabObjMurs = null;
+<<<<<<< HEAD
 var tableau = [
+=======
+var objPointage = null;
+
+    var tableau = [
+>>>>>>> d880428c9bf14c0aff84c613895218eaf064194d
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
         [0,0,1,0,0,0,0,3,3,3,1,0,0,0,0,1,4],
@@ -143,4 +149,25 @@ function dessinerTableau(objC2d){
 	        objC2D.fill();
 	    }
 	    objC2D.restore();
+    }
+    function initPointage(){
+        objPointage = new Object();
+        objPointage.score = 0;
+        objPointage.scoreNiveauPrec = 0 ;
+        objPointage.tempsNiveau = 0;
+        objPointage.tempsTotal = 0;
+        objPointage.vies = 5;
+        objPointage.niveau =1;
+    }
+    function dessinerPointage(objC2D){
+        objC2D.save();
+        var strTextePointage= "Vies : "+objPointage.vies + "  Niveau : " + objPointage.niveau + " Pointage : " + objPointage.score +" Temps : "+objPointage.tempsNiveau;
+        
+        objC2D.fillStyle = 'white';
+        objC2D.font = '20px Arial';
+        objC2D.textBaseLine = 'middle';
+        objC2D.textAlign = 'left';
+        objC2D.fillText(strTextePointage,30,18*intTailleCases);
+        objC2D.restore();
+
     }
