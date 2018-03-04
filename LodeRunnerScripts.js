@@ -102,6 +102,9 @@ class Personnage {
             //si descent
             else if ((intFuturY == 1) && (intContenuEndroitFutur != 3))
                 booPossible = false;
+            //si gauche ou droite
+            else if ((intFuturX != 0) && (intContenuEndroitFutur == 1))
+                booPossible = false;
 
         } catch (error) {
             //est en dépassement de tableau
