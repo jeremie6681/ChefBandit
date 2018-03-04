@@ -421,5 +421,9 @@ function gereDeplacementJoueur(keyCode) {
         case 40: // Flèche-en-bas
             objJoueur.deplacementPossible(0,1,true);
             break;
+        case 88: //x
+            break;
+        case 90: //z
+            break;
     }
 }
