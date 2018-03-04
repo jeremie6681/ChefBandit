@@ -9,6 +9,7 @@ var  objSons = null;
 var tabObjGardien = null;
 var objTextures= null;
 var intNiveau = 1;//est stocker dans objpointage
+var objPointage = null;
 
 var intTailleCases = 30 ;
 var tabObjMurs = null;
@@ -62,14 +63,13 @@ class Position {
 class Personnage {
     constructor(booType) {
         this.intNbLingoOr = 0;
-
+        this.booChuteLibre = false;
         //Personnage Joueur
         if(booType) {
             this.intID = 20;
             this.intPositionX = 14;
             this.intPositionY = 15;
             this.couleur = 'white';
-            //tableau[this.intPositionX-1][this.intPositionY-1] = 20;
         }
         //Personnage Gardien
         else {
@@ -82,12 +82,15 @@ class Personnage {
                 this.intPositionY = Math.floor(Math.random() * 13) + 1;
                 booPositionValide = this.estSurPlateForme() && (tableau[this.intPositionX - 1][this.intPositionY - 1] == 0);
             }
-            //tableau[this.intPositionX-1][this.intPositionY-1] = 30;
         }
     }
 
     estSurPlateForme() {
         return (tableau[this.intPositionX - 1][this.intPositionY] == 1);
+    }
+
+    estChuteLibre() {
+        return (tableau[this.intPositionX - 1][this.intPositionY - 1] == 0);
     }
 
     //Si true-> booFaitDeplacement : fait le déplacement si valide
@@ -111,7 +114,7 @@ class Personnage {
             booPossible = false;
         }
 
-        if(booFaitDeplacement && booPossible) {
+        if(booFaitDeplacement && booPossible && !this.booChuteLibre) {
             this.deplacement(intFuturX,intFuturY);
         }
 
@@ -205,7 +208,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(intNiveau * 3); intIndex++) {
+    for(var intIndex = 0; intIndex<(objPointage.niveau * 3); intIndex++) {
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -295,6 +298,8 @@ function effacerDessin() {
 function mettreAjourAnimation() {
     //gereDeplacementJoueur();
 }
+
+
 
 function dessiner() {
     
