@@ -5,10 +5,10 @@
 var objCanvas = null;
 var objC2D = null;
 var objJoueur = null;
-
+var  objSons = null;
 var tabObjGardien = null;
 
-var intNiveau = 1;
+var intNiveau = 1;//est stocker dans objpointage
 
 var intTailleCases = 30 ;
 var tabObjMurs = null;
@@ -196,6 +196,15 @@ function initPointage(){
     objPointage.tempsTotal = 0;
     objPointage.vies = 5;
     objPointage.niveau =1;
+}
+function initSons() {
+    objSons = new Object();
+
+    var objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonFinirUnNiveau.wav');
+    objSon.load();
+    objSons.finirNiveau = objSon;
+
 }
 
 // Un cycle d'animation	
