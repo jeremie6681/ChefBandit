@@ -89,8 +89,8 @@ class Personnage {
         return (tableau[this.intPositionX - 1][this.intPositionY] == 1);
     }
 
-    estChuteLibre() {
-        return (tableau[this.intPositionX - 1][this.intPositionY - 1] == 0);
+    estEnChuteLibre() {
+        return (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
     }
 
     //Si true-> booFaitDeplacement : fait le déplacement si valide
@@ -103,7 +103,7 @@ class Personnage {
             if ((intFuturY == -1) && (tableau[this.intPositionX-1][this.intPositionY-1] != 3))
                 booPossible = false;
             //si descent
-            else if ((intFuturY == 1) && (intContenuEndroitFutur != 3))
+            else if ((intFuturY == 1) && ((intContenuEndroitFutur != 3) && (intContenuEndroitFutur != 0)))
                 booPossible = false;
             //si gauche ou droite
             else if ((intFuturX != 0) && (intContenuEndroitFutur == 1))
@@ -132,10 +132,10 @@ function initAnimation(Canvas){
     objCanvas.focus();
     objC2D = objCanvas.getContext('2d');
 
+    initPointage();
     initTextures();
     initPersonnage();
     initMurs();
-    initPointage();
     
     dessiner();
     animer();
@@ -285,8 +285,22 @@ function effacerDessin() {
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
     //gereDeplacementJoueur();
+    personnageEnChuteLibre();
+    
 }
 
+function personnageEnChuteLibre() {
+    //Joueur
+    if (objJoueur.estEnChuteLibre()) {
+        objJoueur.deplacement(0,1);
+    }
+
+    tabObjGardien.forEach(objGardien => {
+        if (objGardien.estEnChuteLibre()) {
+            objGardien.deplacement(0,1);
+        }
+    });
+}
 
 
 function dessiner() {
