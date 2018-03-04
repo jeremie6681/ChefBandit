@@ -148,6 +148,18 @@ function initTextures(){
     var objImage = new Image();
     objImage.src = 'textures/brique.png';
     objTextures.brique = objImage;
+
+    objImage = new Image();
+    objImage.src = 'textures/echelle.png';
+    objTextures.echelle = objImage;
+
+    objImage = new Image();
+    objImage.src = 'textures/bloc.png';
+    objTextures.bloc = objImage;
+
+    objImage = new Image();
+    objImage.src = 'textures/barre.png';
+    objTextures.barre = objImage;
 }
 
 function initMurs() {
@@ -327,16 +339,19 @@ function dessinerTableau(){
                     objC2D.drawImage(objTextures.brique, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
                 case 2:
-                    objC2D.fillStyle='blue';
-                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                   //objC2D.fillStyle='blue';
+                   //objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                   objC2D.drawImage(objTextures.barre, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases)               
                     break;
                 case 3:
-                    objC2D.fillStyle='yellow';
-                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    //objC2D.fillStyle='yellow';
+                    //objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.drawImage(objTextures.echelle, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
                 case 4:
-                     objC2D.fillStyle='grey';
-                     objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    // objC2D.fillStyle='grey';
+                    // objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.drawImage(objTextures.bloc, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
             }
         }
