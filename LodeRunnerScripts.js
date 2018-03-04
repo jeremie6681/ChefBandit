@@ -298,13 +298,13 @@ function dessinePersonnage() {
 
 function dessinerPointage(){
     objC2D.save();
-    var strTextePointage= "Vies : "+objPointage.vies + "  Niveau : " + objPointage.niveau + " Pointage : " + objPointage.score +" Temps : "+objPointage.tempsNiveau;
+    var strTextePointage= "Vies : "+objPointage.vies + "     Niveau : " + objPointage.niveau + "    Pointage : " + objPointage.score +"     Temps : "+objPointage.tempsNiveau;
     
     objC2D.fillStyle = 'white';
-    objC2D.font = '20px Arial';
+    objC2D.font = '30px Arial';
     objC2D.textBaseLine = 'middle';
-    objC2D.textAlign = 'left';
-    objC2D.fillText(strTextePointage,30,18*intTailleCases);
+    objC2D.textAlign = 'center';
+    objC2D.fillText(strTextePointage,objCanvas.width/2,18*intTailleCases + 60);
     objC2D.restore();
 
 }
