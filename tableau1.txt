@@ -31,4 +31,5 @@
 0= background
 1= brique
 2=barre de traverse
+3=échelle
 4=bas du niveau (sol incassable)
