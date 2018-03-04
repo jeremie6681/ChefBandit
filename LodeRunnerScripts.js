@@ -7,7 +7,7 @@ var objC2D = null;
 var objJoueur = null;
 var  objSons = null;
 var tabObjGardien = null;
-
+var objTextures= null;
 var intNiveau = 1;//est stocker dans objpointage
 
 var intTailleCases = 30 ;
@@ -129,12 +129,22 @@ function initAnimation(Canvas){
     objCanvas.focus();
     objC2D = objCanvas.getContext('2d');
 
+    initTextures();
     initPersonnage();
     initMurs();
     initPointage();
     
     dessiner();
     animer();
+}
+
+function initTextures(){
+    
+    objTextures = new Object();
+    //texture briques
+    var objImage = new Image();
+    objImage.src = 'textures/brique.png';
+    objTextures.brique = objImage;
 }
 
 function initMurs() {
@@ -205,6 +215,46 @@ function initSons() {
     objSon.load();
     objSons.finirNiveau = objSon;
 
+  
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonBlocRemplit.wav');
+    objSon.load();
+    objSons.remplirBloc = objSon;
+
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonCreuser.wav');
+    objSon.load();
+    objSons.creuser = objSon;
+
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonGardeMeurt.mp3');
+    objSon.load();
+    objSons.gardeMeurt = objSon;
+
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonGardeTombeTrou.mp3');
+    objSon.load();
+    objSons.gardeTombeTrou = objSon;
+
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonLodePertVie.wav');
+    objSon.load();
+    objSons.lodePerdVie = objSon;
+
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonOr');
+    objSon.load();
+    objSons.or = objSon;
+
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonPerdreToutesSesVieswav');
+    objSon.load();
+    objSons.perdreToutesVies = objSon;
+
+    objSon = document.createElement('audio');
+    objSon.setAttribute('src', 'sons/sonTomber.mp3');
+    objSon.load();
+    objSons.tomber = objSon;
 }
 
 // Un cycle d'animation	
@@ -252,8 +302,10 @@ function dessinerTableau(){
         for (var intCasesY =0;intCasesY<17;intCasesY++){
             switch(tableau[intCasesX][intCasesY]){
                 case 1:
-                    objC2D.fillStyle='red';
-                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+
+                    //objC2D.fillStyle='red';
+                    //objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.drawImage(objTextures.brique, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
                 case 2:
                     objC2D.fillStyle='blue';
