@@ -90,7 +90,9 @@ class Personnage {
     }
 
     estEnChuteLibre() {
-        return (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
+        this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
+        
+        return this.booChuteLibre;
     }
 
     //Si true-> booFaitDeplacement : fait le déplacement si valide
@@ -114,6 +116,7 @@ class Personnage {
             booPossible = false;
         }
 
+        //si déplacement possible et pas en chute libre
         if(booFaitDeplacement && booPossible && !this.booChuteLibre) {
             this.deplacement(intFuturX,intFuturY);
         }
@@ -124,6 +127,11 @@ class Personnage {
     deplacement(intFuturX,intFuturY) {
         this.intPositionX += intFuturX;
         this.intPositionY += intFuturY;
+    }
+
+    //true -> gauche / false -> droite
+    creuserPossible(booDirection) {
+        return (tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY] == 1)
     }
 }
 
@@ -217,8 +225,7 @@ function initPointage(){
     objPointage = new Object();
     objPointage.score = 0;
     objPointage.scoreNiveauPrec = 0 ;
-    objPointage.tempsNiveau = 0;
-    objPointage.tempsTotal = 0;
+    objPointage.temps = 0;
     objPointage.vies = 5;
     objPointage.niveau =1;
 }
@@ -296,7 +303,6 @@ function effacerDessin() {
     
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
-    //gereDeplacementJoueur();
     personnageEnChuteLibre();
     
 }
@@ -312,6 +318,10 @@ function personnageEnChuteLibre() {
             objGardien.deplacement(0,1);
         }
     });
+}
+
+function creuser() {
+    alert('ok');
 }
 
 
@@ -396,7 +406,7 @@ function dessinePersonnage() {
 
 function dessinerPointage(){
     objC2D.save();
-    var strTextePointage= "Vies : "+objPointage.vies + "     Niveau : " + objPointage.niveau + "    Pointage : " + objPointage.score +"     Temps : "+objPointage.tempsNiveau;
+    var strTextePointage= "Vies : "+objPointage.vies + "     Niveau : " + objPointage.niveau + "    Pointage : " + objPointage.score +"     Temps : "+objPointage.temps;
     
     objC2D.fillStyle = 'white';
     objC2D.font = '30px Arial';
@@ -407,7 +417,7 @@ function dessinerPointage(){
 
 }
 
-function gereDeplacementJoueur(keyCode) {
+function gereActionJoueur(keyCode) {
     switch(keyCode) {
         case 37: // Flèche-à-gauche
             objJoueur.deplacementPossible(-1,0,true);
@@ -422,8 +432,12 @@ function gereDeplacementJoueur(keyCode) {
             objJoueur.deplacementPossible(0,1,true);
             break;
         case 88: //x
+            if (objJoueur.creuserPossible(false))
+                creuser();
             break;
         case 90: //z
+            if (objJoueur.creuserPossible(true))
+                creuser();
             break;
     }
 }
