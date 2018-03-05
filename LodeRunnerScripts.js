@@ -427,3 +427,25 @@ function gereDeplacementJoueur(keyCode) {
             break;
     }
 }
+//utilise l'algorithme A* pour le pathfinding des gardes
+function trouverDeplacementGarde(intNoIndexGarde){
+    var tabGScore=[];
+    var tabFScore=[];
+    var openSet =[];
+    var tabVisite= [];
+    var pointDepart = new Object();
+    var booFini = false ;
+    var fltCompteur
+    tabFScore.push(Number.MAX_VALUE);
+    tabGScore.push(0);
+    pointDepart.intX=tabObjGardien[intNoIndexGarde.intPositionX];
+    pointDepart.intY=tabObjGardien[intNoIndexGarde.intPositionY];
+    openSet.push(pointDepart)
+    while (openSet.length>0){
+        var fltPlusBas;
+      
+        for(var i=0; i<openSet.length; i++) {
+          if(openSet[i].f < openSet[lowInd].f) { lowInd = i; }
+        }
+    }
+}
