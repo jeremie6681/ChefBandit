@@ -11,6 +11,8 @@ var objTextures= null;
 var intNiveau = 1;//est stocker dans objpointage
 var objPointage = null;
 
+var tabGrilleAi = null;
+
 var intTailleCases = 30 ;
 var tabObjMurs = null;
 var tableau =[
@@ -93,6 +95,7 @@ class Personnage {
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
         return this.booChuteLibre;
+        return (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
     }
 
     //Si true-> booFaitDeplacement : fait le déplacement si valide
@@ -116,7 +119,6 @@ class Personnage {
             booPossible = false;
         }
 
-        //si déplacement possible et pas en chute libre
         if(booFaitDeplacement && booPossible && !this.booChuteLibre) {
             this.deplacement(intFuturX,intFuturY);
         }
@@ -127,11 +129,6 @@ class Personnage {
     deplacement(intFuturX,intFuturY) {
         this.intPositionX += intFuturX;
         this.intPositionY += intFuturY;
-    }
-
-    //true -> gauche / false -> droite
-    creuserPossible(booDirection) {
-        return (tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY] == 1)
     }
 }
 
@@ -225,7 +222,6 @@ function initPointage(){
     objPointage = new Object();
     objPointage.score = 0;
     objPointage.scoreNiveauPrec = 0 ;
-    objPointage.temps = 0;
     objPointage.vies = 5;
     objPointage.niveau =1;
 }
@@ -303,6 +299,7 @@ function effacerDessin() {
     
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
+    //gereDeplacementJoueur();
     personnageEnChuteLibre();
     
 }
@@ -318,10 +315,6 @@ function personnageEnChuteLibre() {
             objGardien.deplacement(0,1);
         }
     });
-}
-
-function creuser() {
-    alert('ok');
 }
 
 
@@ -406,7 +399,7 @@ function dessinePersonnage() {
 
 function dessinerPointage(){
     objC2D.save();
-    var strTextePointage= "Vies : "+objPointage.vies + "     Niveau : " + objPointage.niveau + "    Pointage : " + objPointage.score +"     Temps : "+objPointage.temps;
+    var strTextePointage= "Vies : "+objPointage.vies + "     Niveau : " + objPointage.niveau + "    Pointage : " + objPointage.score +"     Temps : "+objPointage.tempsNiveau;
     
     objC2D.fillStyle = 'white';
     objC2D.font = '30px Arial';
@@ -418,6 +411,7 @@ function dessinerPointage(){
 }
 
 function gereActionJoueur(keyCode) {
+function gereDeplacementJoueur(keyCode) {
     switch(keyCode) {
         case 37: // Flèche-à-gauche
             objJoueur.deplacementPossible(-1,0,true);
@@ -432,34 +426,90 @@ function gereActionJoueur(keyCode) {
             objJoueur.deplacementPossible(0,1,true);
             break;
         case 88: //x
-            if (objJoueur.creuserPossible(false))
-                creuser();
             break;
         case 90: //z
-            if (objJoueur.creuserPossible(true))
-                creuser();
             break;
     }
 }
 //utilise l'algorithme A* pour le pathfinding des gardes
+//retourne null si aucun chemin trouver ou un array conteneant
+// le chemin le plus court enre le garde et lode 
 function trouverDeplacementGarde(intNoIndexGarde){
-    var tabGScore=[];
-    var tabFScore=[];
-    var openSet =[];
-    var tabVisite= [];
+    var solution = null;
+    var openList =[]; //liste des nodes que l'on considere visiter
+    var closedList =[];//liste des Nodes visitees
     var pointDepart = new Object();
     var booFini = false ;
-    var fltCompteur
-    tabFScore.push(Number.MAX_VALUE);
-    tabGScore.push(0);
+   // var fltCompteur
+    var but = new Object();
+    but.intX = objJoueur.intX;
+    but.intY = objJoueur.intY;
+
     pointDepart.intX=tabObjGardien[intNoIndexGarde.intPositionX];
     pointDepart.intY=tabObjGardien[intNoIndexGarde.intPositionY];
     openSet.push(pointDepart)
     while (openSet.length>0){
         var fltPlusBas;
+    pointDepart.fScore= Number.MAX_VALUE;
+    pointDepart.gScore = 0;
+    pointDepart.parent = null;
+    openList.push(pointDepart)
+
+    while (openList.length>0){
+        var intPlusBas;
       
         for(var i=0; i<openSet.length; i++) {
           if(openSet[i].f < openSet[lowInd].f) { lowInd = i; }
+        for(var i=0; i<openList.length; i++) {
+          if(openList[i].fScore < openList[fltPlusBas].fScore) { 
+              intPlusBas = i; 
+            }
         }
+        var nodeActuelle = openList[intPlusBas];
+
+        //si solution trouver 
+        if(nodeActuelle.intX== but.intX&&nodeActuelle.intY == but.intY) {
+            var c = currentNode;
+            var cheminTrouver = [];
+            while(c.parent) {
+              cheminTrouver.push(c);
+              c = c.parent;
+            }
+            boofini= true;
+            solution = cheminTrouver.reverse();
+        }
+          //cas normal 
+          openList.splice(intPlusBas,1);
+          closedList.push(nodeActuelle);
+          var tabVoisins =trouverVoisins(tabGrilleAi, nodeActuelle);
+        
+          for (var i = 0 ;i<tabVoisins.length;i++){
+            var voisin = tabVoisins[i]
+            var intGScore = nodeActuelle.g+1;
+            var booMeilleurG = false;  
+
+            if (){
+
+            }
+            else if (){
+
+            }
+            if (booMeilleurG){
+
+            }
+          }
+
+
     }
+    return solution 
+}
+//retourne les case dans lesquelles 
+//il est possible de faire un mouvement 
+//qui sont autour de la case reçue
+function trouverVoisins(nodeActuelle){
+    var tabVoisins = null;
+
+
+
+    return tabVoisins;
 }
