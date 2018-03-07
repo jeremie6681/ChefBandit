@@ -10,6 +10,8 @@ var tabObjGardien = null;
 var objTextures= null;
 var intNiveau = 1;//est stocker dans objpointage
 var objPointage = null;
+var objDateHeureDepart = null;
+
 
 var tabGrilleAi = null;
 
@@ -223,7 +225,9 @@ function initPointage(){
     objPointage.score = 0;
     objPointage.scoreNiveauPrec = 0 ;
     objPointage.vies = 5;
-    objPointage.niveau =1;
+    objPointage.niveau = 1;
+    objPointage.tempsNiveauSeconde = ajouteZeros(0);
+    objPointage.tempsNiveauMinute = ajouteZeros(0);
 }
 function initSons() {
     objSons = new Object();
@@ -301,6 +305,22 @@ function effacerDessin() {
 function mettreAjourAnimation() {
     //gereDeplacementJoueur();
     personnageEnChuteLibre();
+    mettreAJourPointage();
+    
+}
+
+//Pour l'instant c'est seulement le chronometre qui est mis à jour ...
+function mettreAJourPointage() {
+    if (objDateHeureDepart != null) {
+        //Temps
+        var objDateheureMaintenant = new Date();
+        var intMsEcoulees = objDateheureMaintenant - objDateHeureDepart;
+        
+        //objDateHeureDepart = new Date(objDateheureMaintenant);
+        
+        objPointage.tempsNiveauSeconde = ajouteZeros(Math.round((((intMsEcoulees % 3600000) % 60000) / 1000)));
+        objPointage.tempsNiveauMinute = ajouteZeros(Math.floor((intMsEcoulees % 3600000) / 60000));
+    }
     
 }
 
@@ -399,7 +419,7 @@ function dessinePersonnage() {
 
 function dessinerPointage(){
     objC2D.save();
-    var strTextePointage= "Vies : "+objPointage.vies + "     Niveau : " + objPointage.niveau + "    Pointage : " + objPointage.score +"     Temps : "+objPointage.tempsNiveau;
+    var strTextePointage= "Vies : "+objPointage.vies + "     Niveau : " + objPointage.niveau + "    Pointage : " + objPointage.score +"     Temps : "+objPointage.tempsNiveauMinute + ":" + objPointage.tempsNiveauSeconde;
     
     objC2D.fillStyle = 'white';
     objC2D.font = '30px Arial';
@@ -410,30 +430,43 @@ function dessinerPointage(){
 
 }
 
-function gereActionJoueur(keyCode) {
+//function gereActionJoueur(keyCode) {
 function gereDeplacementJoueur(keyCode) {
     switch(keyCode) {
         case 37: // Flèche-à-gauche
+            //Démarre chronomètre si partie commencer 
+            objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             objJoueur.deplacementPossible(-1,0,true);
             break;
         case 38: // Flèche-en-haut
+            //Démarre chronomètre si partie commencer 
+            objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             objJoueur.deplacementPossible(0,-1,true);
             break;
         case 39: // Flèche-à-droite
+            //Démarre chronomètre si partie commencer 
+            objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             objJoueur.deplacementPossible(1,0,true);
             break;
         case 40: // Flèche-en-bas
+            //Démarre chronomètre si partie commencer 
+            objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             objJoueur.deplacementPossible(0,1,true);
             break;
         case 88: //x
+            //Démarre chronomètre si partie commencer 
+            objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             break;
         case 90: //z
+            //Démarre chronomètre si partie commencer 
+            objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             break;
     }
 }
 //utilise l'algorithme A* pour le pathfinding des gardes
 //retourne null si aucun chemin trouver ou un array conteneant
 // le chemin le plus court enre le garde et lode 
+/*
 function trouverDeplacementGarde(intNoIndexGarde){
     var solution = null;
     var openList =[]; //liste des nodes que l'on considere visiter
@@ -460,6 +493,7 @@ function trouverDeplacementGarde(intNoIndexGarde){
       
         for(var i=0; i<openSet.length; i++) {
           if(openSet[i].f < openSet[lowInd].f) { lowInd = i; }
+        }
         for(var i=0; i<openList.length; i++) {
           if(openList[i].fScore < openList[fltPlusBas].fScore) { 
               intPlusBas = i; 
@@ -487,7 +521,7 @@ function trouverDeplacementGarde(intNoIndexGarde){
             var voisin = tabVoisins[i]
             var intGScore = nodeActuelle.g+1;
             var booMeilleurG = false;  
-
+            
             if (){
 
             }
@@ -502,14 +536,20 @@ function trouverDeplacementGarde(intNoIndexGarde){
 
     }
     return solution 
-}
+}*/
 //retourne les case dans lesquelles 
 //il est possible de faire un mouvement 
 //qui sont autour de la case reçue
+
 function trouverVoisins(nodeActuelle){
     var tabVoisins = null;
 
 
 
     return tabVoisins;
+}
+
+//Ajoute un zéro à gauche si le nombre envoyé est un chiffre 
+function ajouteZeros(intValeur) {
+    return (intValeur < 10 ? '0' : '') + intValeur;
 }
