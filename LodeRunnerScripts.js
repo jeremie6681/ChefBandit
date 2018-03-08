@@ -5,17 +5,16 @@
 var objCanvas = null;
 var objC2D = null;
 var objJoueur = null;
-var  objSons = null;
+var objSons = null;
 var tabObjGardien = null;
 var objTextures= null;
 var intNiveau = 1;//est stocker dans objpointage
 var objPointage = null;
 var objDateHeureDepart = null;
-
-
+var tabObjTrou = new Array();
 var tabGrilleAi = null;
 
-var intTailleCases = 30 ;
+const intTailleCases = 30 ;
 var tabObjMurs = null;
 var tableau =[
     [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
@@ -97,7 +96,7 @@ class Personnage {
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
         return this.booChuteLibre;
-        return (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
+        //return (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
     }
 
     //Si true-> booFaitDeplacement : fait le déplacement si valide
@@ -132,6 +131,20 @@ class Personnage {
         this.intPositionX += intFuturX;
         this.intPositionY += intFuturY;
     }
+
+    //true -> gauche / false -> droite
+    creuserPossible(booDirection) {
+        return (tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY] == 1);
+    }
+}
+
+class trou {
+    constructor(intPositionX, intPositionY) {
+        this.intPositionX = intPositionX;
+        this.intPositionY = intPositionY;
+        this.objDateHeureTrou = new Date();
+    }
+    
 }
 
 function initAnimation(Canvas){
@@ -316,12 +329,27 @@ function mettreAJourPointage() {
         var objDateheureMaintenant = new Date();
         var intMsEcoulees = objDateheureMaintenant - objDateHeureDepart;
         
-        //objDateHeureDepart = new Date(objDateheureMaintenant);
-        
         objPointage.tempsNiveauSeconde = ajouteZeros(Math.round((((intMsEcoulees % 3600000) % 60000) / 1000)));
         objPointage.tempsNiveauMinute = ajouteZeros(Math.floor((intMsEcoulees % 3600000) / 60000));
     }
     
+}
+
+//Vérifie si un trou doit etre refermer
+function mettreAJourTrou() {
+    var objDateheureMaintenant = new Date();
+    tabObjTrou.forEach( element => {
+        var intSecondeEcouler = Math.round((((objDateheureMaintenant - element.objDateHeureTrou % 3600000) % 60000) / 1000))
+        if (intSecondeEcouler == 4) {
+            //refermerTrou(element);
+            //element
+        }
+    })
+}
+
+//Referme un trou
+function refermerTrou() {
+
 }
 
 function personnageEnChuteLibre() {
@@ -337,6 +365,21 @@ function personnageEnChuteLibre() {
     });
 }
 
+//gauche -> true / droite -> false
+function creuser(booDirection) {
+    //vérifie que le trou n'existe pas déjà
+    var objNouveauTrou = new trou(objJoueur.intPositionX + (booDirection ? -1 : 1),objJoueur.intPositionY + 1);
+
+    var objTrouExiste = tabObjTrou.find(function(element) {
+        return ((objNouveauTrou.intPositionX == element.intPositionX) && (objNouveauTrou.intPositionY == element.intPositionY));
+    });
+
+    //creuse
+    if (objTrouExiste == null) {
+        tabObjTrou.push(objNouveauTrou);
+    }    
+}
+
 
 function dessiner() {
     
@@ -347,7 +390,8 @@ function dessiner() {
     dessinerTableau(); 
     dessinerMurs();
     dessinePersonnage();
-    dessinerPointage();      
+    dessinerPointage();
+    dessinerTrou();
 }
 
 function dessinerTableau(){
@@ -430,6 +474,13 @@ function dessinerPointage(){
 
 }
 
+function dessinerTrou() {
+    tabObjTrou.forEach(element => {
+        objC2D.fillStyle = "orange";
+        objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+    });
+}
+
 //function gereActionJoueur(keyCode) {
 function gereDeplacementJoueur(keyCode) {
     switch(keyCode) {
@@ -456,10 +507,16 @@ function gereDeplacementJoueur(keyCode) {
         case 88: //x
             //Démarre chronomètre si partie commencer 
             objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
+            if (objJoueur.creuserPossible(false))
+-                creuser(false);
+
             break;
         case 90: //z
             //Démarre chronomètre si partie commencer 
             objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
+            if (objJoueur.creuserPossible(true))
+-                creuser(true);
+
             break;
     }
 }
