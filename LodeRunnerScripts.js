@@ -151,7 +151,14 @@ class trou {
         this.intPositionY = intPositionY;
         this.objDateHeureTrou = new Date();
         this.objPersonnageTrou = null;
+        this.objDateHeureTomberTrou = null;
+
         tableau[this.intPositionX -1][this.intPositionY -1] = 5;
+    }
+
+    rempliTrou(objPersonnage) {
+        this.objPersonnageTrou = objPersonnage;
+        this.objDateHeureTomberTrou = new Date();
     }
     
 }
@@ -348,13 +355,36 @@ function mettreAJourPointage() {
 function mettreAJourTrou() {
     var objDateheureMaintenant = new Date();
     tabObjTrou.forEach( element => {
-        var intSecondeEcouler = Math.round((((objDateheureMaintenant - element.objDateHeureTrou % 3600000) % 60000) / 1000))
+        var intSecondeEcoulerTrou = Math.round((((objDateheureMaintenant - element.objDateHeureTrou % 3600000) % 60000) / 1000));
         //Referme trou
-        if (intSecondeEcouler == 4) {
-            refermerTrou(element);
-            
-            //element
+        if (intSecondeEcoulerTrou == 8) {
+            //refermerTrou(element);
+            tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
+            tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
+            /*
+            //Personne dans le trou et va mourir
+            if (element.objPersonnageTrou != null) {
+                var objPersoDansTrou = element.objPersonnageTrou;
+                if (objPersoDansTrou.intID == 20) {
+                    //perdre vie
+                }
+                else {
+                    //Gardien point de départ
+                    //Position aléatoire sur la ligne 2
+                    var booPositionValide = false;
+                    while(!booPositionValide) {
+                        objPersoDansTrou.intPositionX = Math.floor(Math.random() * 15) + 1;
+                        objPersoDansTrou.intPositionY = 2;
+                        booPositionValide = objPersoDansTrou.estSurPlateForme() && (tableau[objPersoDansTrou.intPositionX - 1][objPersoDansTrou.intPositionY - 1] == 0);
+                    }
+                }
+            }
         }
+        //gardien dans trou mais va sortir
+        else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20)) {
+            //sortir
+        }*/
+    } //a enlever quand enlève commentaire ...
     });
 
 }
@@ -375,10 +405,13 @@ function creuser(booDirection) {
 }
 
 //Referme un trou
+/*
 function refermerTrou(objTrou) {
     tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
     tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
-}
+
+
+}*/
 
 //Chute libre et tomber dans un trou ...
 function personnageEnChuteLibre() {
@@ -402,6 +435,13 @@ function tomberDansTrou(objPersonnage) {
         if ((objPersonnage.intPositionX == element.intPositionX) && (objPersonnage.intPositionY == element.intPositionY)) {
             element.objPersonnageTrou = objPersonnage;
             tableau[element.intPositionX - 1][element.intPositionY - 1] = 6;
+
+            //Perte lingo si tombe dans vide (pas gestion si c,est joueur ....)
+            /*
+            if (objPersonnage.intNbLingoOr > 0) {
+                objPersonnage.intNbLingoOr--;
+                tableau[element.intPositionX - 1][element.intPositionY] = 7;
+            }*/
         }
             
     });
@@ -457,7 +497,12 @@ function dessinerTableau(){
                     objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.restore();
                     break;
-
+                case 7: 
+                    objC2D.save();
+                    objC2D.fillStyle = "yellow";
+                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.restore();
+                    break;
             }
         }
     }
@@ -557,7 +602,7 @@ function ajouteZeros(intValeur) {
 //retourne null si aucun chemin est trouvé ou un array contenant
 // le chemin le plus court entre le garde et lode 
 function trouverDeplacementGarde(intNoIndexGarde){
-   var tempsDebut =Date.now();
+    var tempsDebut =Date.now();
     var solution = null;
     var openList =[]; //liste des nodes que l'on considere visiter
     var closedList =[];//liste des Nodes visitees
@@ -578,8 +623,8 @@ function trouverDeplacementGarde(intNoIndexGarde){
         var intPlusBas=0;
       
         for(var i=0; i<openList.length; i++) {
-          if(openList[i].f < openList[intPlusBas].f) { 
-              intPlusBas = i; 
+            if(openList[i].f < openList[intPlusBas].f) { 
+                intPlusBas = i; 
             }
         }
         var nodeActuelle = openList[intPlusBas];
@@ -589,18 +634,18 @@ function trouverDeplacementGarde(intNoIndexGarde){
             var c = nodeActuelle;
             var cheminTrouver = [];
             while(c.parent) {
-              cheminTrouver.push(c);
-              c = c.parent;
+                cheminTrouver.push(c);
+                c = c.parent;
             }
             boofini= true;
             solution = cheminTrouver.reverse();
         }
-          //cas normal 
-          openList.splice(intPlusBas,1);
-          closedList.push(nodeActuelle);
-          var tabVoisins =trouverVoisins(nodeActuelle);
-        
-          for (var i = 0 ;i<tabVoisins.length;i++){
+        //cas normal 
+        openList.splice(intPlusBas,1);
+        closedList.push(nodeActuelle);
+        var tabVoisins =trouverVoisins(nodeActuelle);
+    
+        for (var i = 0 ;i<tabVoisins.length;i++){
             var voisin = tabVoisins[i]
             var intGScore = nodeActuelle.g+1;
             var booMeilleurG = false;  
@@ -618,7 +663,7 @@ function trouverDeplacementGarde(intNoIndexGarde){
                 voisin.g = intGScore;
                 voisin.f=voisin.g+voisin.h;
             }
-          }
+        }
     }
     console.log(Date.now()-tempsDebut+" milisecondes");
     return solution ;
@@ -630,7 +675,7 @@ function trouverVoisins(nodeActuelle){
     var tabVoisins = [];
     var node = new Object();
     //vers le haut
-        if(nodeActuelle.intY>0){
+    if(nodeActuelle.intY>0){
         if(tableau[nodeActuelle.intX][nodeActuelle.intY-1]==3||(tableau[nodeActuelle.intX][nodeActuelle.intY]==3 && tableau[nodeActuelle.intX][nodeActuelle.intY-1]==0)){
             node = new Object();
             node.intX = nodeActuelle.intX;
@@ -644,8 +689,8 @@ function trouverVoisins(nodeActuelle){
         }
     }
  
-        //vers le bas
-        if(nodeActuelle.intY<intTailleTableauY){
+    //vers le bas
+    if(nodeActuelle.intY<intTailleTableauY){
         if(tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=1 && tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=4){
             node = new Object();
             node.intX =nodeActuelle.intX;
@@ -658,8 +703,8 @@ function trouverVoisins(nodeActuelle){
         } 
     }
   
-        //vers la droite
-        if(nodeActuelle.intX<intTailleTableauX-1){
+    //vers la droite
+    if(nodeActuelle.intX<intTailleTableauX-1){
         if((tableau[nodeActuelle.intX+1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX+1][nodeActuelle.intY+1]!=0 && tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=2)||tableau[nodeActuelle.intX+1][nodeActuelle.intY]==2){
             node = new Object();
             node.intX = nodeActuelle.intX +1;
@@ -673,7 +718,7 @@ function trouverVoisins(nodeActuelle){
         }
     }
     //vers la gauche
-        if(nodeActuelle.intX>0){
+    if(nodeActuelle.intX>0){
         if((tableau[nodeActuelle.intX -1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX-1][nodeActuelle.intY+1]!=0&& tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=2)||tableau[nodeActuelle.intX-1][nodeActuelle.intY]==2){ 
             node = new Object();
             node.intX = nodeActuelle.intX -1;
@@ -705,8 +750,26 @@ function mettreAjourGardes(){
         for(var i= 0 ; i<tabObjGardien.length;i++){
             var tabDeplacement = trouverDeplacementGarde(i);
             if (tabDeplacement!=null){
-            tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
-            tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1
+                //tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
+                //tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1
+
+                //Même chose 
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //alert(tabObjGardien[i].intPositionX);
+                //alert(tabObjGardien[i].intPositionY);
+                //alert(tabDeplacement[0].intY+1);
+                tabObjGardien[i].deplacement(tabDeplacement[0].intY+1,tabDeplacement[0].intX+1);
+                //alert(tabDeplacement[0].intX+1);
+                //alert(tabDeplacement[0].intY+1);
+                //alert('ok');
             }
         }
         tempsDerdiermv = Date.now();
