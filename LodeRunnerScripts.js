@@ -94,10 +94,15 @@ class Personnage {
         return (tableau[this.intPositionX - 1][this.intPositionY] == 1);
     }
 
+    //paramètre true => trou vide / paramètre false => trou plein
+    estDansTrou(booEtat) {
+        return (tableau[this.intPositionX - 1][this.intPositionY - 1] == (booEtat ? 5 : 6));
+    }
+
     estEnChuteLibre() {
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
-        return this.booChuteLibre;
+        return this.booChuteLibre || (tableau[this.intPositionX - 1][this.intPositionY] == 5);
         //return (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
     }
 
@@ -145,6 +150,8 @@ class trou {
         this.intPositionX = intPositionX;
         this.intPositionY = intPositionY;
         this.objDateHeureTrou = new Date();
+        this.objPersonnageTrou = null;
+        tableau[this.intPositionX -1][this.intPositionY -1] = 5;
     }
     
 }
@@ -321,6 +328,7 @@ function mettreAjourAnimation() {
     //gereDeplacementJoueur();
     personnageEnChuteLibre();
     mettreAJourPointage();
+    mettreAJourTrou();
     
 }
 
@@ -342,29 +350,14 @@ function mettreAJourTrou() {
     var objDateheureMaintenant = new Date();
     tabObjTrou.forEach( element => {
         var intSecondeEcouler = Math.round((((objDateheureMaintenant - element.objDateHeureTrou % 3600000) % 60000) / 1000))
+        //Referme trou
         if (intSecondeEcouler == 4) {
-            //refermerTrou(element);
+            refermerTrou(element);
+            
             //element
         }
-    })
-}
-
-//Referme un trou
-function refermerTrou() {
-
-}
-
-function personnageEnChuteLibre() {
-    //Joueur
-    if (objJoueur.estEnChuteLibre()) {
-        objJoueur.deplacement(0,1);
-    }
-
-    tabObjGardien.forEach(objGardien => {
-        if (objGardien.estEnChuteLibre()) {
-            objGardien.deplacement(0,1);
-        }
     });
+
 }
 
 //gauche -> true / droite -> false
@@ -382,6 +375,38 @@ function creuser(booDirection) {
     }    
 }
 
+//Referme un trou
+function refermerTrou(objTrou) {
+    tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
+    tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
+}
+
+//Chute libre et tomber dans un trou ...
+function personnageEnChuteLibre() {
+    //Joueur
+    if (objJoueur.estEnChuteLibre())
+        objJoueur.deplacement(0,1);
+    else if (objJoueur.estDansTrou(true))
+        tomberDansTrou(objJoueur);
+
+    tabObjGardien.forEach(objGardien => {
+        if (objGardien.estEnChuteLibre() && !objGardien.estDansTrou(true) && !objGardien.estDansTrou(false))
+            objGardien.deplacement(0,1);
+        else if (objGardien.estDansTrou(true))
+            tomberDansTrou(objGardien);
+    });
+}
+
+function tomberDansTrou(objPersonnage) {
+
+    tabObjTrou.forEach(element => {
+        if ((objPersonnage.intPositionX == element.intPositionX) && (objPersonnage.intPositionY == element.intPositionY)) {
+            element.objPersonnageTrou = objPersonnage;
+            tableau[element.intPositionX - 1][element.intPositionY - 1] = 6;
+        }
+            
+    });
+}
 
 function dessiner() {
     
@@ -393,7 +418,7 @@ function dessiner() {
     dessinerMurs();
     dessinePersonnage();
     dessinerPointage();
-    dessinerTrou();
+    //dessinerTrou();
 }
 
 function dessinerTableau(){
@@ -422,6 +447,19 @@ function dessinerTableau(){
                     // objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.drawImage(objTextures.bloc, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
+                case 5:
+                    objC2D.save();
+                    objC2D.fillStyle = "orange";
+                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.restore();
+                    break;
+                case 6:
+                    objC2D.save();
+                    objC2D.fillStyle = "green";
+                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
+                    objC2D.restore();
+                    break;
+
             }
         }
     }
@@ -476,12 +514,13 @@ function dessinerPointage(){
 
 }
 
+/*
 function dessinerTrou() {
     tabObjTrou.forEach(element => {
         objC2D.fillStyle = "orange";
         objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
     });
-}
+}*/
 
 //function gereActionJoueur(keyCode) {
 function gereDeplacementJoueur(keyCode) {
@@ -511,14 +550,12 @@ function gereDeplacementJoueur(keyCode) {
             objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             if (objJoueur.creuserPossible(false))
 -                creuser(false);
-
             break;
         case 90: //z
             //Démarre chronomètre si partie commencer 
             objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             if (objJoueur.creuserPossible(true))
 -                creuser(true);
-
             break;
     }
 }

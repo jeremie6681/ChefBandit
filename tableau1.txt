@@ -33,3 +33,5 @@
 2=barre de traverse
 3=échelle
 4=bas du niveau (sol incassable)
+5=trou
+6=trou plein
