@@ -15,6 +15,8 @@ var tabObjTrou = new Array();
 var tabGrilleAi = null;
 
 const intTailleCases = 30 ;
+const intTailleTableauX = 28;
+const intTailleTableauX = 17;
 var tabObjMurs = null;
 var tableau =[
     [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
@@ -520,93 +522,157 @@ function gereDeplacementJoueur(keyCode) {
             break;
     }
 }
-//utilise l'algorithme A* pour le pathfinding des gardes
-//retourne null si aucun chemin trouver ou un array conteneant
-// le chemin le plus court enre le garde et lode 
-/*
-function trouverDeplacementGarde(intNoIndexGarde){
-    var solution = null;
-    var openList =[]; //liste des nodes que l'on considere visiter
-    var closedList =[];//liste des Nodes visitees
-    var pointDepart = new Object();
-    var booFini = false ;
-   // var fltCompteur
-    var but = new Object();
-    but.intX = objJoueur.intX;
-    but.intY = objJoueur.intY;
-
-    pointDepart.intX=tabObjGardien[intNoIndexGarde.intPositionX];
-    pointDepart.intY=tabObjGardien[intNoIndexGarde.intPositionY];
-    openSet.push(pointDepart)
-    while (openSet.length>0){
-        var fltPlusBas;
-    pointDepart.fScore= Number.MAX_VALUE;
-    pointDepart.gScore = 0;
-    pointDepart.parent = null;
-    openList.push(pointDepart)
-
-    while (openList.length>0){
-        var intPlusBas;
-      
-        for(var i=0; i<openSet.length; i++) {
-          if(openSet[i].f < openSet[lowInd].f) { lowInd = i; }
-        }
-        for(var i=0; i<openList.length; i++) {
-          if(openList[i].fScore < openList[fltPlusBas].fScore) { 
-              intPlusBas = i; 
-            }
-        }
-        var nodeActuelle = openList[intPlusBas];
-
-        //si solution trouver 
-        if(nodeActuelle.intX== but.intX&&nodeActuelle.intY == but.intY) {
-            var c = currentNode;
-            var cheminTrouver = [];
-            while(c.parent) {
-              cheminTrouver.push(c);
-              c = c.parent;
-            }
-            boofini= true;
-            solution = cheminTrouver.reverse();
-        }
-          //cas normal 
-          openList.splice(intPlusBas,1);
-          closedList.push(nodeActuelle);
-          var tabVoisins =trouverVoisins(tabGrilleAi, nodeActuelle);
-        
-          for (var i = 0 ;i<tabVoisins.length;i++){
-            var voisin = tabVoisins[i]
-            var intGScore = nodeActuelle.g+1;
-            var booMeilleurG = false;  
-            
-            if (){
-
-            }
-            else if (){
-
-            }
-            if (booMeilleurG){
-
-            }
-          }
-
-
-    }
-    return solution 
-}*/
-//retourne les case dans lesquelles 
-//il est possible de faire un mouvement 
-//qui sont autour de la case reçue
-
-function trouverVoisins(nodeActuelle){
-    var tabVoisins = null;
-
-
-
-    return tabVoisins;
-}
-
 //Ajoute un zéro à gauche si le nombre envoyé est un chiffre 
 function ajouteZeros(intValeur) {
     return (intValeur < 10 ? '0' : '') + intValeur;
 }
+//utilise l'algorithme A* pour le pathfinding des gardes
+//retourne null si aucun chemin est trouvé ou un array contenant
+// le chemin le plus court entre le garde et lode 
+function trouverDeplacementGarde(intNoIndexGarde){
+    var tempsDebut =Date.now();
+     var solution = null;
+     var openList =[]; //liste des nodes que l'on considere visiter
+     var closedList =[];//liste des Nodes visitees
+     var pointDepart = new Object();
+     var booFini = false ;
+    // var fltCompteur
+     var but = new Object();
+     but.intX = objJoueur.intPositionX;
+     but.intY = objJoueur.intPositionY;
+ 
+     pointDepart.intX=tabObjGardien[intNoIndexGarde].intPositionX;
+     pointDepart.intY=tabObjGardien[intNoIndexGarde].intPositionY;
+     pointDepart.f= Number.MAX_VALUE;
+     pointDepart.g = 0;
+     pointDepart.h= null;
+     pointDepart.parent = null;
+     openList.push(pointDepart)
+ 
+     while (openList.length>0){
+         var intPlusBas=0;
+       
+         for(var i=0; i<openList.length; i++) {
+           if(openList[i].f < openList[intPlusBas].f) { 
+               intPlusBas = i; 
+             }
+         }
+         var nodeActuelle = openList[intPlusBas];
+ 
+         //si solution trouver 
+         if(nodeActuelle.intX == but.intX&&nodeActuelle.intY == but.intY) {
+             var c = nodeActuelle;
+             var cheminTrouver = [];
+             while(c.parent) {
+               cheminTrouver.push(c);
+               c = c.parent;
+             }
+             boofini= true;
+             solution = cheminTrouver.reverse();
+         }
+           //cas normal 
+           openList.splice(intPlusBas,1);
+           closedList.push(nodeActuelle);
+           var tabVoisins =trouverVoisins(nodeActuelle);
+         
+           for (var i = 0 ;i<tabVoisins.length;i++){
+             var voisin = tabVoisins[i]
+             var intGScore = nodeActuelle.g+1;
+             var booMeilleurG = false;  
+ 
+             if (!voisinDejaVisite(closedList,voisin)){
+                 booMeilleurG = true;
+                 voisin.h = calculerHeuristique(voisin, but);
+                 openList.push(voisin)
+             }
+             else if (intGScore<voisin.g){
+                 booMeilleurG = true;
+             }
+             if (booMeilleurG){
+                 voisin.parent = nodeActuelle;
+                 voisin.g = intGScore;
+                 voisin.f=voisin.g+voisin.h;
+             }
+           }
+     }
+     console.log(solution);
+     console.log(Date.now()-tempsDebut+" milisecondes");
+     return solution ;
+ }
+ //retourne les case dans lesquelles 
+ //il est possible de faire un mouvement 
+ //qui sont autour de la case reçue
+ function trouverVoisins(nodeActuelle){
+     var tabVoisins = [];
+     var node = new Object();
+         //mouvement vers le haut
+         console.log("allo");
+         if(nodeActuelle.intY>0){
+         if(tableau[nodeActuelle.intX][nodeActuelle.intY-1]==3||(tableau[nodeActuelle.intX][nodeActuelle.intY]==3 && tableau[nodeActuelle.intX][nodeActuelle.intY]==0)){
+             var node = new Object();
+             node.intX = nodeActuelle.intX;
+             node.intY = nodeActuelle.intY -1;
+             node.f= Number.MAX_VALUE;
+             node.g = nodeActuelle+1;
+             node.h= null;
+             node.parent = null;
+             tabVoisins.push(node);
+ 
+         }
+     }
+  
+         //vers le bas
+         if(nodeActuelle.intY<intTailleTableauY){
+         if(tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=1 && tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=4){
+             var node = new Object();
+             node.intX =nodeActuelle.intX;
+             node.intY =nodeActuelle.intY+1;
+             node.f= Number.MAX_VALUE;
+             node.g = nodeActuelle+1;
+             node.h= null;
+             node.parent = null;
+             tabVoisins.push(node);
+         } 
+     }
+   
+         //vers la droite
+         if(nodeActuelle.intX<intTailleTableauX){
+             console.log(nodeActuelle);
+         if(tableau[nodeActuelle.intX+1][parseInt(nodeActuelle.intY)]!=1 && tableau[nodeActuelle.intX+1][nodeActuelle.intY+1]!=0){
+             var node = new Object();
+             node.intX = nodeActuelle.intX +1;
+             node.intY = nodeActuelle.intY;
+             node.f= Number.MAX_VALUE;
+             node.g = nodeActuelle+1;
+             node.h= null;
+             node.parent = null;
+             tabVoisins.push(node);
+             
+         }
+     }
+         //vers la gauche
+         if(nodeActuelle.intX>0){
+         if(tableau[nodeActuelle.intX -1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX-1][nodeActuelle.intY+1]!=0){ 
+             var node = new Object();
+             node.intX = nodeActuelle.intX -1;
+             node.intY = nodeActuelle.intY;
+             node.f= Number.MAX_VALUE;
+             node.g = nodeActuelle+1;
+             node.h= null;
+             node.parent = null;
+             tabVoisins.push(node);
+         }
+     }
+     return tabVoisins;
+ }
+ function voisinDejaVisite(closeSet,voisin){
+     var booDejaVisite = false ;
+     closeSet.forEach(function(e){
+         (e.intX == voisin.intX&&e.intY == voisin.intY)?booDejaVisite=true:booDejaVisite=booDejaVisite;
+     });
+     return booDejaVisite;
+ }
+ function calculerHeuristique(voisin,but){
+     return (Math.abs(but.intX-voisin.intX)+Math.abs(but.intY-voisin.intY))
+ }
+ 
