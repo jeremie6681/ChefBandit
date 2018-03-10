@@ -13,7 +13,7 @@ var objPointage = null;
 var objDateHeureDepart = null;
 var tabObjTrou = new Array();
 var tabGrilleAi = null;
-
+var tempsDerdiermv = 0;
 const intTailleCases = 30 ;
 const intTailleTableauX = 28;
 const intTailleTableauY = 17;
@@ -328,8 +328,7 @@ function mettreAjourAnimation() {
     //gereDeplacementJoueur();
     personnageEnChuteLibre();
     mettreAJourPointage();
-    mettreAJourTrou();
-    
+    mettreAjourGardes();
 }
 
 //Pour l'instant c'est seulement le chronometre qui est mis à jour ...
@@ -418,7 +417,6 @@ function dessiner() {
     dessinerMurs();
     dessinePersonnage();
     dessinerPointage();
-    //dessinerTrou();
 }
 
 function dessinerTableau(){
@@ -514,14 +512,6 @@ function dessinerPointage(){
 
 }
 
-/*
-function dessinerTrou() {
-    tabObjTrou.forEach(element => {
-        objC2D.fillStyle = "orange";
-        objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
-    });
-}*/
-
 //function gereActionJoueur(keyCode) {
 function gereDeplacementJoueur(keyCode) {
     switch(keyCode) {
@@ -567,142 +557,159 @@ function ajouteZeros(intValeur) {
 //retourne null si aucun chemin est trouvé ou un array contenant
 // le chemin le plus court entre le garde et lode 
 function trouverDeplacementGarde(intNoIndexGarde){
-    var tempsDebut =Date.now();
-     var solution = null;
-     var openList =[]; //liste des nodes que l'on considere visiter
-     var closedList =[];//liste des Nodes visitees
-     var pointDepart = new Object();
-     var but = new Object();
-     but.intX = objJoueur.intPositionX;
-     but.intY = objJoueur.intPositionY;
+   var tempsDebut =Date.now();
+    var solution = null;
+    var openList =[]; //liste des nodes que l'on considere visiter
+    var closedList =[];//liste des Nodes visitees
+    var pointDepart = new Object();
+    var but = new Object();
+    but.intX = objJoueur.intPositionX-1;
+    but.intY = objJoueur.intPositionY-1;
+
+    pointDepart.intX=tabObjGardien[intNoIndexGarde].intPositionX-1;
+    pointDepart.intY=tabObjGardien[intNoIndexGarde].intPositionY-1;
+    pointDepart.f= Number.MAX_VALUE;
+    pointDepart.g = 0;
+    pointDepart.h= null;
+    pointDepart.parent = null;
+    openList.push(pointDepart)
+
+    while (openList.length>0){
+        var intPlusBas=0;
+      
+        for(var i=0; i<openList.length; i++) {
+          if(openList[i].f < openList[intPlusBas].f) { 
+              intPlusBas = i; 
+            }
+        }
+        var nodeActuelle = openList[intPlusBas];
+
+        //si solution trouver 
+        if(nodeActuelle.intX == but.intX&&nodeActuelle.intY == but.intY) {
+            var c = nodeActuelle;
+            var cheminTrouver = [];
+            while(c.parent) {
+              cheminTrouver.push(c);
+              c = c.parent;
+            }
+            boofini= true;
+            solution = cheminTrouver.reverse();
+        }
+          //cas normal 
+          openList.splice(intPlusBas,1);
+          closedList.push(nodeActuelle);
+          var tabVoisins =trouverVoisins(nodeActuelle);
+        
+          for (var i = 0 ;i<tabVoisins.length;i++){
+            var voisin = tabVoisins[i]
+            var intGScore = nodeActuelle.g+1;
+            var booMeilleurG = false;  
+
+            if (!voisinDejaVisite(closedList,voisin)){
+                booMeilleurG = true;
+                voisin.h = calculerHeuristique(voisin, but);
+                openList.push(voisin)
+            }
+            else if (intGScore<voisin.g){
+                booMeilleurG = true;
+            }
+            if (booMeilleurG){
+                voisin.parent = nodeActuelle;
+                voisin.g = intGScore;
+                voisin.f=voisin.g+voisin.h;
+            }
+          }
+    }
+    console.log(Date.now()-tempsDebut+" milisecondes");
+    return solution ;
+}
+//retourne les case dans lesquelles 
+//il est possible de faire un mouvement 
+//qui sont autour de la case reçue
+function trouverVoisins(nodeActuelle){
+    var tabVoisins = [];
+    var node = new Object();
+    //vers le haut
+        if(nodeActuelle.intY>0){
+        if(tableau[nodeActuelle.intX][nodeActuelle.intY-1]==3||(tableau[nodeActuelle.intX][nodeActuelle.intY]==3 && tableau[nodeActuelle.intX][nodeActuelle.intY-1]==0)){
+            node = new Object();
+            node.intX = nodeActuelle.intX;
+            node.intY = nodeActuelle.intY -1;
+            node.f= Number.MAX_VALUE;
+            node.g = nodeActuelle+1;
+            node.h= null;
+            node.parent = null;
+            tabVoisins.push(node);
+
+        }
+    }
  
-     pointDepart.intX=tabObjGardien[intNoIndexGarde].intPositionX;
-     pointDepart.intY=tabObjGardien[intNoIndexGarde].intPositionY;
-     pointDepart.f= Number.MAX_VALUE;
-     pointDepart.g = 0;
-     pointDepart.h= null;
-     pointDepart.parent = null;
-     openList.push(pointDepart)
- 
-     while (openList.length>0){
-         var intPlusBas=0;
-       
-         for(var i=0; i<openList.length; i++) {
-           if(openList[i].f < openList[intPlusBas].f) { 
-               intPlusBas = i; 
-             }
-         }
-         var nodeActuelle = openList[intPlusBas];
- 
-         //si solution trouver 
-         if(nodeActuelle.intX == but.intX&&nodeActuelle.intY == but.intY) {
-             var c = nodeActuelle;
-             var cheminTrouver = [];
-             while(c.parent) {
-               cheminTrouver.push(c);
-               c = c.parent;
-             }
-             boofini= true;
-             solution = cheminTrouver.reverse();
-         }
-           //cas normal 
-           openList.splice(intPlusBas,1);
-           closedList.push(nodeActuelle);
-           var tabVoisins =trouverVoisins(nodeActuelle);
-         
-           for (var i = 0 ;i<tabVoisins.length;i++){
-             var voisin = tabVoisins[i]
-             var intGScore = nodeActuelle.g+1;
-             var booMeilleurG = false;  
- 
-             if (!voisinDejaVisite(closedList,voisin)){
-                 booMeilleurG = true;
-                 voisin.h = calculerHeuristique(voisin, but);
-                 openList.push(voisin)
-             }
-             else if (intGScore<voisin.g){
-                 booMeilleurG = true;
-             }
-             if (booMeilleurG){
-                 voisin.parent = nodeActuelle;
-                 voisin.g = intGScore;
-                 voisin.f=voisin.g+voisin.h;
-             }
-           }
-     }
-     console.log(Date.now()-tempsDebut+" milisecondes");
-     return solution ;
- }
- //retourne les case dans lesquelles 
- //il est possible de faire un mouvement 
- //qui sont autour de la case reçue
- function trouverVoisins(nodeActuelle){
-     var tabVoisins = [];
-     var node = new Object();
-         if(nodeActuelle.intY>0){
-         if(tableau[nodeActuelle.intX][nodeActuelle.intY-1]==3||(tableau[nodeActuelle.intX][nodeActuelle.intY]==3 && tableau[nodeActuelle.intX][nodeActuelle.intY]==0)){
-             node = new Object();
-             node.intX = nodeActuelle.intX;
-             node.intY = nodeActuelle.intY -1;
-             node.f= Number.MAX_VALUE;
-             node.g = nodeActuelle+1;
-             node.h= null;
-             node.parent = null;
-             tabVoisins.push(node);
- 
-         }
-     }
+        //vers le bas
+        if(nodeActuelle.intY<intTailleTableauY){
+        if(tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=1 && tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=4){
+            node = new Object();
+            node.intX =nodeActuelle.intX;
+            node.intY =nodeActuelle.intY+1;
+            node.f= Number.MAX_VALUE;
+            node.g = nodeActuelle+1;
+            node.h= null;
+            node.parent = null;
+            tabVoisins.push(node);
+        } 
+    }
   
-         //vers le bas
-         if(nodeActuelle.intY<intTailleTableauY){
-         if(tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=1 && tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=4){
-             node = new Object();
-             node.intX =nodeActuelle.intX;
-             node.intY =nodeActuelle.intY+1;
-             node.f= Number.MAX_VALUE;
-             node.g = nodeActuelle+1;
-             node.h= null;
-             node.parent = null;
-             tabVoisins.push(node);
-         } 
-     }
-   
-         //vers la droite
-         if(nodeActuelle.intX<intTailleTableauX-1){
-         if(tableau[nodeActuelle.intX+1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX+1][nodeActuelle.intY+1]!=0){
-             node = new Object();
-             node.intX = nodeActuelle.intX +1;
-             node.intY = nodeActuelle.intY;
-             node.f= Number.MAX_VALUE;
-             node.g = nodeActuelle+1;
-             node.h= null;
-             node.parent = null;
-             tabVoisins.push(node);
-             
-         }
-     }
-         if(nodeActuelle.intX>0){
-         if(tableau[nodeActuelle.intX -1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX-1][nodeActuelle.intY+1]!=0){ 
-             node = new Object();
-             node.intX = nodeActuelle.intX -1;
-             node.intY = nodeActuelle.intY;
-             node.f= Number.MAX_VALUE;
-             node.g = nodeActuelle+1;
-             node.h= null;
-             node.parent = null;
-             tabVoisins.push(node);
-         }
-     }
-     return tabVoisins;
- }
- function voisinDejaVisite(closeSet,voisin){
-     var booDejaVisite = false ;
-     closeSet.forEach(function(e){
-         (e.intX == voisin.intX&&e.intY == voisin.intY)?booDejaVisite=true:booDejaVisite=booDejaVisite;
-     });
-     return booDejaVisite;
- }
- function calculerHeuristique(voisin,but){
-     return (Math.abs(but.intX-voisin.intX)+Math.abs(but.intY-voisin.intY))
- }
+        //vers la droite
+        if(nodeActuelle.intX<intTailleTableauX-1){
+        if((tableau[nodeActuelle.intX+1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX+1][nodeActuelle.intY+1]!=0 && tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=2)||tableau[nodeActuelle.intX+1][nodeActuelle.intY]==2){
+            node = new Object();
+            node.intX = nodeActuelle.intX +1;
+            node.intY = nodeActuelle.intY;
+            node.f= Number.MAX_VALUE;
+            node.g = nodeActuelle+1;
+            node.h= null;
+            node.parent = null;
+            tabVoisins.push(node);
+            
+        }
+    }
+    //vers la gauche
+        if(nodeActuelle.intX>0){
+        if((tableau[nodeActuelle.intX -1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX-1][nodeActuelle.intY+1]!=0&& tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=2)||tableau[nodeActuelle.intX-1][nodeActuelle.intY]==2){ 
+            node = new Object();
+            node.intX = nodeActuelle.intX -1;
+            node.intY = nodeActuelle.intY;
+            node.f= Number.MAX_VALUE;
+            node.g = nodeActuelle+1;
+            node.h= null;
+            node.parent = null;
+            tabVoisins.push(node);
+        }
+    }
+    return tabVoisins;
+}
+
+function voisinDejaVisite(closeSet,voisin){
+    var booDejaVisite = false ;
+    closeSet.forEach(function(e){
+        (e.intX == voisin.intX&&e.intY == voisin.intY)?booDejaVisite=true:booDejaVisite=booDejaVisite;
+    });
+    return booDejaVisite;
+}
+
+function calculerHeuristique(voisin,but){
+    return (Math.abs(but.intX-voisin.intX)+Math.abs(but.intY-voisin.intY))
+}
+
+function mettreAjourGardes(){
+    if(Date.now()-tempsDerdiermv>=1000) {
+        for(var i= 0 ; i<tabObjGardien.length;i++){
+            var tabDeplacement = trouverDeplacementGarde(i);
+            if (tabDeplacement!=null){
+            tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
+            tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1
+            }
+        }
+        tempsDerdiermv = Date.now();
+    }
+}
  
