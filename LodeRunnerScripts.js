@@ -16,7 +16,7 @@ var tabGrilleAi = null;
 
 const intTailleCases = 30 ;
 const intTailleTableauX = 28;
-const intTailleTableauX = 17;
+const intTailleTableauY = 17;
 var tabObjMurs = null;
 var tableau =[
     [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
@@ -535,8 +535,6 @@ function trouverDeplacementGarde(intNoIndexGarde){
      var openList =[]; //liste des nodes que l'on considere visiter
      var closedList =[];//liste des Nodes visitees
      var pointDepart = new Object();
-     var booFini = false ;
-    // var fltCompteur
      var but = new Object();
      but.intX = objJoueur.intPositionX;
      but.intY = objJoueur.intPositionY;
@@ -595,7 +593,6 @@ function trouverDeplacementGarde(intNoIndexGarde){
              }
            }
      }
-     console.log(solution);
      console.log(Date.now()-tempsDebut+" milisecondes");
      return solution ;
  }
@@ -605,11 +602,9 @@ function trouverDeplacementGarde(intNoIndexGarde){
  function trouverVoisins(nodeActuelle){
      var tabVoisins = [];
      var node = new Object();
-         //mouvement vers le haut
-         console.log("allo");
          if(nodeActuelle.intY>0){
          if(tableau[nodeActuelle.intX][nodeActuelle.intY-1]==3||(tableau[nodeActuelle.intX][nodeActuelle.intY]==3 && tableau[nodeActuelle.intX][nodeActuelle.intY]==0)){
-             var node = new Object();
+             node = new Object();
              node.intX = nodeActuelle.intX;
              node.intY = nodeActuelle.intY -1;
              node.f= Number.MAX_VALUE;
@@ -624,7 +619,7 @@ function trouverDeplacementGarde(intNoIndexGarde){
          //vers le bas
          if(nodeActuelle.intY<intTailleTableauY){
          if(tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=1 && tableau[nodeActuelle.intX][nodeActuelle.intY+1]!=4){
-             var node = new Object();
+             node = new Object();
              node.intX =nodeActuelle.intX;
              node.intY =nodeActuelle.intY+1;
              node.f= Number.MAX_VALUE;
@@ -636,10 +631,9 @@ function trouverDeplacementGarde(intNoIndexGarde){
      }
    
          //vers la droite
-         if(nodeActuelle.intX<intTailleTableauX){
-             console.log(nodeActuelle);
-         if(tableau[nodeActuelle.intX+1][parseInt(nodeActuelle.intY)]!=1 && tableau[nodeActuelle.intX+1][nodeActuelle.intY+1]!=0){
-             var node = new Object();
+         if(nodeActuelle.intX<intTailleTableauX-1){
+         if(tableau[nodeActuelle.intX+1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX+1][nodeActuelle.intY+1]!=0){
+             node = new Object();
              node.intX = nodeActuelle.intX +1;
              node.intY = nodeActuelle.intY;
              node.f= Number.MAX_VALUE;
@@ -650,10 +644,9 @@ function trouverDeplacementGarde(intNoIndexGarde){
              
          }
      }
-         //vers la gauche
          if(nodeActuelle.intX>0){
          if(tableau[nodeActuelle.intX -1][nodeActuelle.intY]!=1 && tableau[nodeActuelle.intX-1][nodeActuelle.intY+1]!=0){ 
-             var node = new Object();
+             node = new Object();
              node.intX = nodeActuelle.intX -1;
              node.intY = nodeActuelle.intY;
              node.f= Number.MAX_VALUE;
