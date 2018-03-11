@@ -99,6 +99,10 @@ class Personnage {
         return (tableau[this.intPositionX - 1][this.intPositionY - 1] == (booEtat ? 5 : 6));
     }
 
+    estSurLingo() {
+        return (tableau[this.intPositionX - 1][this.intPositionY -1] == 7);
+    }
+
     estEnChuteLibre() {
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
@@ -336,6 +340,7 @@ function mettreAjourAnimation() {
     personnageEnChuteLibre();
     mettreAJourPointage();
     mettreAjourGardes();
+    mettreAJourLingo();
 }
 
 //Pour l'instant c'est seulement le chronometre qui est mis à jour ...
@@ -377,6 +382,9 @@ function mettreAJourTrou() {
                         objPersoDansTrou.intPositionY = 2;
                         booPositionValide = objPersoDansTrou.estSurPlateForme() && (tableau[objPersoDansTrou.intPositionX - 1][objPersoDansTrou.intPositionY - 1] == 0);
                     }
+
+                    //Point car garde meurt
+                    objPointage.score =+ 75;
                 }
             }
         }
@@ -436,6 +444,9 @@ function tomberDansTrou(objPersonnage) {
             element.objPersonnageTrou = objPersonnage;
             tableau[element.intPositionX - 1][element.intPositionY - 1] = 6;
 
+            if (objPersonnage.intID != 20)
+                objPointage.score =+ 75;
+
             //Perte lingo si tombe dans vide (pas gestion si c,est joueur ....)
             /*
             if (objPersonnage.intNbLingoOr > 0) {
@@ -445,6 +456,64 @@ function tomberDansTrou(objPersonnage) {
         }
             
     });
+}
+
+function mettreAJourLingo() {
+    //Joueur
+    if (objJoueur.estSurLingo()) {
+        objJoueur.intNbLingoOr++;
+        objPointage.score =+ 250;
+        tableau[objJoueur.intPositionX - 1][objJoueur.intPositionY - 1] = 0;
+    }
+
+    //Gardien
+    tabObjGardien.forEach(element => {
+        if (element.estSurLingo()) {
+            element.intNbLingoOr++;
+            tableau[element.intPositionX - 1][element.intPositionY - 1] = 0;
+        }
+    });
+}
+
+//Peut surement etre rasembler avec pointage ...
+function mettreAJourNiveau() {
+    //Si tout les lingos ramassés
+    if ((objJoueur.intNbLingoOr == 6) && (objPointage.niveau < 10) && (tableau[17][0] == 0)) {
+        //fait apparaitre échelle pour le prochain niveau
+
+    }
+    else if (objJoueur.intNbLingoOr == 6 && objPointage.niveau == 10) {
+        //une victoire total (niveau 10 terminé)
+    }
+    else if (objPersonnage.intPositionX == 18 && objPersonnage.intPositionY == 0) {
+        //Réinisiallise niveau
+        objPointage.niveau++;
+        objPointage.scoreNiveauPrec = objPointage.score;
+
+        reinitialiseNiveau();
+    }
+}
+
+//True -> ajoute échelle | false -> retire échelle
+function echelleSortie(booAjoutRetire) {
+    var i;
+    for (i =0; i< 4;i++) {
+        tableau[17][i] = (booAjoutRetire ? 3 : 0);
+    }
+}
+
+function reinitialiseNiveau() {
+    objDateHeureDepart = null;
+    initPersonnage();
+    echelleSortie(false);
+
+    //Remmet lingo à leur place
+    tableau[4][1] = 7;
+    tableau[23][3] = 7;
+    tableau[22][6] = 7;
+    tableau[7][13] = 7;
+    tableau[24][13] = 7;
+    tableau[18][15] = 7;
 }
 
 function dessiner() {
