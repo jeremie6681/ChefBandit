@@ -816,8 +816,10 @@ function calculerHeuristique(voisin,but){
 
 function mettreAjourGardes(){
     if (objDateHeureDepart != null){
+  
      if(Date.now()-tempsDerdiermv>=1000) {
         for(var i= 0 ; i<tabObjGardien.length;i++){
+            if (!tabObjGardien[i].booBloquee){
             var tabDeplacement = trouverDeplacementGarde(i);
             if (tabDeplacement!=null){
                 if (tabDeplacement[0]!=null){
@@ -826,15 +828,17 @@ function mettreAjourGardes(){
                       mourir();
                      }
                     else {
-                        
+                        //a ajouter regader si vas marcher sur autre garde
                         tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
                         tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
                       }
                  }
              }
          }
+        }
             tempsDerdiermv = Date.now();
         }
+    
     }
 }
 function mourir(){
