@@ -8,7 +8,6 @@ var objJoueur = null;
 var objSons = null;
 var tabObjGardien = null;
 var objTextures= null;
-var intNiveau = 1;//est stocker dans objpointage
 var objPointage = null;
 var objDateHeureDepart = null;
 var tabObjTrou = new Array();
@@ -70,6 +69,7 @@ class Personnage {
         this.intNbLingoOr = 0;
         this.booChuteLibre = false;
         this.booBloquee = false;
+
         //Personnage Joueur
         if(booType) {
             this.intID = 20;
@@ -81,7 +81,6 @@ class Personnage {
         else {
             this.intID = (tabObjGardien.length + 30);
             this.couleur = 'purple'; //tempo
-
 
             var booPositionValide = false;
             while(!booPositionValide) {
@@ -108,8 +107,7 @@ class Personnage {
     estEnChuteLibre() {
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
-        return this.booChuteLibre || (tableau[this.intPositionX - 1][this.intPositionY] == 5);
-        //return (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
+        return this.booChuteLibre || (tableau[this.intPositionX - 1][this.intPositionY] == 5) || (tableau[this.intPositionX - 1][this.intPositionY] == 7);
     }
 
     //Si true-> booFaitDeplacement : fait le déplacement si valide
@@ -167,6 +165,12 @@ class trou {
         this.objDateHeureTomberTrou = new Date();
     }
     
+}
+
+class lingo {
+    constructor(intPositionX, intPositionY) {
+        
+    }
 }
 
 function initAnimation(Canvas){
@@ -314,6 +318,10 @@ function initSons() {
     objSons.tomber = objSon;
 }
 
+function initLingo() {
+
+}
+
 // Un cycle d'animation	
 function animer() {
     // Requête pour le prochain cycle
@@ -344,6 +352,7 @@ function mettreAjourAnimation() {
     mettreAJourPointage();
     mettreAjourGardes();
     mettreAJourLingo();
+    mettreAJourNiveau();
     
 }
 
@@ -390,7 +399,7 @@ function mettreAJourTrou() {
                     objPersoDansTrou.booBloquee = false;
 
                     //Point car garde meurt
-                    objPointage.score =+ 75;
+                    objPointage.score += 75;
                 }
             }
         }
@@ -453,12 +462,12 @@ function tomberDansTrou(objPersonnage) {
             tableau[element.intPositionX - 1][element.intPositionY - 1] = 6;
 
             if (objPersonnage.intID != 20)
-                objPointage.score =+ 75;
+                objPointage.score += 75;
 
             //Perte lingo si tombe dans vide
             if (objPersonnage.intNbLingoOr > 0 && objPersonnage.intID != 20) {
                 objPersonnage.intNbLingoOr--;
-                tableau[element.intPositionX - 1][element.intPositionY] = 7;
+                tableau[element.intPositionX - 1][element.intPositionY -2] = 7;
             }
         }
             
@@ -469,7 +478,7 @@ function mettreAJourLingo() {
     //Joueur
     if (objJoueur.estSurLingo()) {
         objJoueur.intNbLingoOr++;
-        objPointage.score =+ 250;
+        objPointage.score += 250;
         tableau[objJoueur.intPositionX - 1][objJoueur.intPositionY - 1] = 0;
     }
 
@@ -485,14 +494,15 @@ function mettreAJourLingo() {
 //Peut surement etre rasembler avec pointage ...
 function mettreAJourNiveau() {
     //Si tout les lingos ramassés
-    if ((objJoueur.intNbLingoOr == 6) && (objPointage.niveau < 10) && (tableau[17][0] == 0)) {
+    if ((objJoueur.intNbLingoOr == 6) && (objPointage.niveau < 10) && (tableau[18][0] == 0)) {
         //fait apparaitre échelle pour le prochain niveau
+        echelleSortie(true);
 
     }
     else if (objJoueur.intNbLingoOr == 6 && objPointage.niveau == 10) {
         //une victoire total (niveau 10 terminé)
     }
-    else if (objPersonnage.intPositionX == 18 && objPersonnage.intPositionY == 0) {
+    else if (objJoueur.intPositionX == 18 && objJoueur.intPositionY == 0) {
         //Réinisiallise niveau
         objPointage.niveau++;
         objPointage.scoreNiveauPrec = objPointage.score;
@@ -505,7 +515,7 @@ function mettreAJourNiveau() {
 function echelleSortie(booAjoutRetire) {
     var i;
     for (i =0; i< 4;i++) {
-        tableau[17][i] = (booAjoutRetire ? 3 : 0);
+        tableau[18][i] = (booAjoutRetire ? 3 : 0);
     }
 }
 
@@ -516,13 +526,16 @@ function reinitialiseNiveau() {
 
     objPointage.tempsNiveauSeconde = ajouteZeros(0);
     objPointage.tempsNiveauMinute = ajouteZeros(0);
+
     //Remmet lingo à leur place
     tableau[4][1] = 7;
     tableau[23][3] = 7;
     tableau[22][6] = 7;
-    tableau[7][13] = 7;
-    tableau[24][13] = 7;
-    tableau[18][15] = 7;
+    tableau[7][12] = 7;
+    tableau[24][12] = 7;
+    tableau[18][14] = 7;
+
+
 }
 
 function dessiner() {
@@ -847,9 +860,9 @@ function mourir(){
     //si toutes les vies sont perdues
     if (objPointage.vies<=0){
         arreterAnimation();
-        console.log('game over');
+        console.log('完成したゲーム');
         effacerDessin();
-        var strTexte ='game over';
+        var strTexte ='完成したゲーム';
         objC2D.fillStyle = 'red';
         objC2D.font = '80px Arial';
         objC2D.textBaseLine = 'middle';
