@@ -69,6 +69,7 @@ class Personnage {
     constructor(booType) {
         this.intNbLingoOr = 0;
         this.booChuteLibre = false;
+        this.booBloquee = false;
         //Personnage Joueur
         if(booType) {
             this.intID = 20;
@@ -80,6 +81,7 @@ class Personnage {
         else {
             this.intID = (tabObjGardien.length + 30);
             this.couleur = 'purple'; //tempo
+
 
             var booPositionValide = false;
             while(!booPositionValide) {
@@ -337,10 +339,12 @@ function effacerDessin() {
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
     //gereDeplacementJoueur();
+    mettreAJourTrou();
     personnageEnChuteLibre();
     mettreAJourPointage();
     mettreAjourGardes();
     mettreAJourLingo();
+    
 }
 
 //Pour l'instant c'est seulement le chronometre qui est mis à jour ...
@@ -366,7 +370,7 @@ function mettreAJourTrou() {
             //refermerTrou(element);
             tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
             tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
-            /*
+            
             //Personne dans le trou et va mourir
             if (element.objPersonnageTrou != null) {
                 var objPersoDansTrou = element.objPersonnageTrou;
@@ -383,6 +387,8 @@ function mettreAJourTrou() {
                         booPositionValide = objPersoDansTrou.estSurPlateForme() && (tableau[objPersoDansTrou.intPositionX - 1][objPersoDansTrou.intPositionY - 1] == 0);
                     }
 
+                    objPersoDansTrou.booBloquee = false;
+
                     //Point car garde meurt
                     objPointage.score =+ 75;
                 }
@@ -391,8 +397,7 @@ function mettreAJourTrou() {
         //gardien dans trou mais va sortir
         else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20)) {
             //sortir
-        }*/
-    } //a enlever quand enlève commentaire ...
+        }
     });
 
 }
@@ -430,10 +435,13 @@ function personnageEnChuteLibre() {
         tomberDansTrou(objJoueur);
 
     tabObjGardien.forEach(objGardien => {
-        if (objGardien.estEnChuteLibre() && !objGardien.estDansTrou(true) && !objGardien.estDansTrou(false))
-            objGardien.deplacement(0,1);
-        else if (objGardien.estDansTrou(true))
+        
+        if (objGardien.estDansTrou(true)) {
             tomberDansTrou(objGardien);
+        }
+        else if (objGardien.estDansTrou(false)) {
+            objGardien.booBloquee = true;
+        }
     });
 }
 
@@ -447,12 +455,11 @@ function tomberDansTrou(objPersonnage) {
             if (objPersonnage.intID != 20)
                 objPointage.score =+ 75;
 
-            //Perte lingo si tombe dans vide (pas gestion si c,est joueur ....)
-            /*
-            if (objPersonnage.intNbLingoOr > 0) {
+            //Perte lingo si tombe dans vide
+            if (objPersonnage.intNbLingoOr > 0 && objPersonnage.intID != 20) {
                 objPersonnage.intNbLingoOr--;
                 tableau[element.intPositionX - 1][element.intPositionY] = 7;
-            }*/
+            }
         }
             
     });
