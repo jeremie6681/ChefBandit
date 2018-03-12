@@ -507,6 +507,8 @@ function reinitialiseNiveau() {
     initPersonnage();
     echelleSortie(false);
 
+    objPointage.tempsNiveauSeconde = ajouteZeros(0);
+    objPointage.tempsNiveauMinute = ajouteZeros(0);
     //Remmet lingo à leur place
     tableau[4][1] = 7;
     tableau[23][3] = 7;
@@ -673,9 +675,9 @@ function trouverDeplacementGarde(intNoIndexGarde){
 
     pointDepart.intX=tabObjGardien[intNoIndexGarde].intPositionX-1;
     pointDepart.intY=tabObjGardien[intNoIndexGarde].intPositionY-1;
-    pointDepart.f= Number.MAX_VALUE;
-    pointDepart.g = 0;
-    pointDepart.h= null;
+    pointDepart.f= Number.MAX_VALUE;   //h+g
+    pointDepart.g = 0;                  // score g distance du depart
+    pointDepart.h= null;                // score h distance estimee du but
     pointDepart.parent = null;
     openList.push(pointDepart)
 
@@ -806,15 +808,45 @@ function calculerHeuristique(voisin,but){
 }
 
 function mettreAjourGardes(){
-    if(Date.now()-tempsDerdiermv>=1000) {
+    if (objDateHeureDepart != null){
+     if(Date.now()-tempsDerdiermv>=1000) {
         for(var i= 0 ; i<tabObjGardien.length;i++){
             var tabDeplacement = trouverDeplacementGarde(i);
             if (tabDeplacement!=null){
-                tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
-                tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
-            }
+                if (tabDeplacement[0]!=null){
+                //colision entre le garde et lode
+                    if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
+                      mourir();
+                     }
+                    else {
+                        
+                        tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
+                        tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
+                      }
+                 }
+             }
+         }
+            tempsDerdiermv = Date.now();
         }
-        tempsDerdiermv = Date.now();
     }
 }
- 
+function mourir(){
+    objPointage.vies --;
+
+    //si toutes les vies sont perdues
+    if (objPointage.vies<=0){
+        arreterAnimation();
+        console.log('game over');
+        effacerDessin();
+        var strTexte ='game over';
+        objC2D.fillStyle = 'red';
+        objC2D.font = '80px Arial';
+        objC2D.textBaseLine = 'middle';
+        objC2D.textAlign = 'center';
+        objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
+      
+    }
+    else{
+        reinitialiseNiveau();
+  } 
+}
