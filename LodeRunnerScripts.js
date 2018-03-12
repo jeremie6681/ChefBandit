@@ -534,24 +534,15 @@ function dessinerTableau(){
         for (var intCasesY =0;intCasesY<17;intCasesY++){
             switch(tableau[intCasesX][intCasesY]){
                 case 1:
-
-                    //objC2D.fillStyle='red';
-                    //objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.drawImage(objTextures.brique, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
                 case 2:
-                   //objC2D.fillStyle='blue';
-                   //objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                    objC2D.drawImage(objTextures.barre, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases)               
                     break;
                 case 3:
-                    //objC2D.fillStyle='yellow';
-                    //objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.drawImage(objTextures.echelle, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
                 case 4:
-                    // objC2D.fillStyle='grey';
-                    // objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.drawImage(objTextures.bloc, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
                 case 5:
@@ -819,26 +810,8 @@ function mettreAjourGardes(){
         for(var i= 0 ; i<tabObjGardien.length;i++){
             var tabDeplacement = trouverDeplacementGarde(i);
             if (tabDeplacement!=null){
-                //tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
-                //tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1
-
-                //Même chose 
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //alert(tabObjGardien[i].intPositionX);
-                //alert(tabObjGardien[i].intPositionY);
-                //alert(tabDeplacement[0].intY+1);
-                tabObjGardien[i].deplacement(tabDeplacement[0].intY+1,tabDeplacement[0].intX+1);
-                //alert(tabDeplacement[0].intX+1);
-                //alert(tabDeplacement[0].intY+1);
-                //alert('ok');
+                tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
+                tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
             }
         }
         tempsDerdiermv = Date.now();
