@@ -368,8 +368,8 @@ function mettreAJourTrou() {
         //Referme trou
         if (intSecondeEcoulerTrou == 8) {
             //refermerTrou(element);
-            tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
-            tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
+            tabObjTrou.splice(tabObjTrou.indexOf(element),1);
+            tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
             
             //Personne dans le trou et va mourir
             if (element.objPersonnageTrou != null) {
