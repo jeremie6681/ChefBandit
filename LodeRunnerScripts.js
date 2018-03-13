@@ -105,8 +105,13 @@ class Personnage {
         return (tableau[this.intPositionX - 1][this.intPositionY - 1] == (booEtat ? 5 : 6));
     }
 
+    /*
     estSurLingo() {
         return (tableau[this.intPositionX - 1][this.intPositionY -1] == 7);
+    }*/
+
+    estSurLingo() {
+        return ((tabObjLingo.findIndex(element => ((element.intPositionX == this.intPositionX) && (element.intPositionY == this.intPositionY))) == -1) ? false : true);
     }
 
     estEnChuteLibre() {
@@ -176,7 +181,6 @@ class lingo {
     constructor(intPositionX, intPositionY) {
         this.intPositionX = intPositionX;
         this.intPositionY = intPositionY;
-        this.booRecupere = false;
     }
 }
 
@@ -189,7 +193,7 @@ function initAnimation(Canvas){
     initTextures();
     initPersonnage();
     initMurs();
-    //initLingo();
+    initLingo();
     
     dessiner();
     animer();
@@ -262,7 +266,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau + 3); intIndex++) {
+    for(var intIndex = 0; intIndex<(objPointage.niveau + 2); intIndex++) {
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -327,7 +331,7 @@ function initSons() {
 }
 
 function initLingo() {
-    tabLingo = new Array();
+    tabObjLingo = new Array();
 
     tabObjLingo.push(new lingo(5,2));
     tabObjLingo.push(new lingo(24,4));
@@ -482,7 +486,8 @@ function tomberDansTrou(objPersonnage) {
             //Perte lingo si tombe dans vide
             if (objPersonnage.intNbLingoOr > 0 && objPersonnage.intID != 20) {
                 objPersonnage.intNbLingoOr--;
-                tableau[element.intPositionX - 1][element.intPositionY -2] = 7;
+                //tableau[element.intPositionX - 1][element.intPositionY -2] = 7;
+                gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
             }
         }
             
@@ -494,14 +499,16 @@ function mettreAJourLingo() {
     if (objJoueur.estSurLingo()) {
         objJoueur.intNbLingoOr++;
         objPointage.score += 250;
-        tableau[objJoueur.intPositionX - 1][objJoueur.intPositionY - 1] = 0;
+        //tableau[objJoueur.intPositionX - 1][objJoueur.intPositionY - 1] = 0;
+        gestionStockLingo(false, objJoueur.intPositionX, objJoueur.intPositionY);
     }
 
     //Gardien
     tabObjGardien.forEach(element => {
         if (element.estSurLingo()) {
             element.intNbLingoOr++;
-            tableau[element.intPositionX - 1][element.intPositionY - 1] = 0;
+            //tableau[element.intPositionX - 1][element.intPositionY - 1] = 0;
+            gestionStockLingo(false, element.intPositionX, element.intPositionY);
         }
     });
 }
@@ -537,23 +544,30 @@ function echelleSortie(booAjoutRetire) {
 function reinitialiseNiveau() {
     objDateHeureDepart = null;
     initPersonnage();
+    initLingo();
     echelleSortie(false);
 
     objPointage.tempsNiveauSeconde = ajouteZeros(0);
     objPointage.tempsNiveauMinute = ajouteZeros(0);
     //Remmet lingo à leur place
-    
+    /*
     tableau[4][1] = 7;
     tableau[23][3] = 7;
     tableau[22][6] = 7;
     tableau[7][12] = 7;
     tableau[24][12] = 7;
-    tableau[18][14] = 7;
+    tableau[18][14] = 7;*/
 }
 
-//True -> Cache | false -> affiche
-function afficheCacheLingo(booRecupere) {
-    //
+//Ajoute ou enlève un lingo
+//booAction = True -> ajout | false -> enlève
+function gestionStockLingo(booAction, intPositionX, intPositionY) {
+    if (booAction) {
+        tabObjLingo.push(new lingo(intPositionX,intPositionY));
+    }
+    else {
+        tabObjLingo.splice(tabObjLingo.findIndex(element => ((element.intPositionX == intPositionX) && (element.intPositionY == intPositionY))),1);
+    }
 }
 
 function dessiner() {
@@ -566,6 +580,7 @@ function dessiner() {
     dessinerMurs();
     dessinePersonnage();
     dessinerPointage();
+    dessinerLingo();
 }
 
 function dessinerTableau(){
@@ -597,12 +612,13 @@ function dessinerTableau(){
                     objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.restore();
                     break;
-                case 7: 
+                /*
+                    case 7: 
                     objC2D.save();
                     objC2D.fillStyle = "yellow";
                     objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.restore();
-                    break;
+                    break;*/
             }
         }
     }
@@ -658,12 +674,10 @@ function dessinerPointage(){
 }
 
 function dessinerLingo() {
-    //Garde
     objC2D.fillStyle = 'yellow';
 
     tabObjLingo.forEach(element => {
-        if (!element.booRecupere)
-            objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+        objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
     });
 }
 
