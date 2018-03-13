@@ -6,17 +6,22 @@ var objCanvas = null;
 var objC2D = null;
 var objJoueur = null;
 var objSons = null;
-var tabObjGardien = null;
 var objTextures= null;
 var objPointage = null;
+
 var objDateHeureDepart = null;
-var tabObjTrou = new Array();
-var tabGrilleAi = null;
 var tempsDerdiermv = 0;
+
 const intTailleCases = 30 ;
 const intTailleTableauX = 28;
 const intTailleTableauY = 17;
+
 var tabObjMurs = null;
+var tabObjTrou = new Array();
+var tabGrilleAi = null;
+var tabObjGardien = null;
+var tabObjLingo = null;
+
 var tableau =[
     [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
     [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
@@ -169,7 +174,9 @@ class trou {
 
 class lingo {
     constructor(intPositionX, intPositionY) {
-        
+        this.intPositionX = intPositionX;
+        this.intPositionY = intPositionY;
+        this.booRecupere = false;
     }
 }
 
@@ -182,6 +189,7 @@ function initAnimation(Canvas){
     initTextures();
     initPersonnage();
     initMurs();
+    //initLingo();
     
     dessiner();
     animer();
@@ -254,7 +262,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau * 3); intIndex++) {
+    for(var intIndex = 0; intIndex<(objPointage.niveau + 3); intIndex++) {
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -319,7 +327,14 @@ function initSons() {
 }
 
 function initLingo() {
+    tabLingo = new Array();
 
+    tabObjLingo.push(new lingo(5,2));
+    tabObjLingo.push(new lingo(24,4));
+    tabObjLingo.push(new lingo(22,7));
+    tabObjLingo.push(new lingo(8,13));
+    tabObjLingo.push(new lingo(25,13));
+    tabObjLingo.push(new lingo(19,15));
 }
 
 // Un cycle d'animation	
@@ -497,12 +512,12 @@ function mettreAJourNiveau() {
     if ((objJoueur.intNbLingoOr == 6) && (objPointage.niveau < 10) && (tableau[18][0] == 0)) {
         //fait apparaitre échelle pour le prochain niveau
         echelleSortie(true);
-
     }
     else if (objJoueur.intNbLingoOr == 6 && objPointage.niveau == 10) {
         //une victoire total (niveau 10 terminé)
+        //Bravo
     }
-    else if (objJoueur.intPositionX == 18 && objJoueur.intPositionY == 0) {
+    else if (objJoueur.intPositionX == 19 && objJoueur.intPositionY == 0) {
         //Réinisiallise niveau
         objPointage.niveau++;
         objPointage.scoreNiveauPrec = objPointage.score;
@@ -526,16 +541,19 @@ function reinitialiseNiveau() {
 
     objPointage.tempsNiveauSeconde = ajouteZeros(0);
     objPointage.tempsNiveauMinute = ajouteZeros(0);
-
     //Remmet lingo à leur place
+    
     tableau[4][1] = 7;
     tableau[23][3] = 7;
     tableau[22][6] = 7;
     tableau[7][12] = 7;
     tableau[24][12] = 7;
     tableau[18][14] = 7;
+}
 
-
+//True -> Cache | false -> affiche
+function afficheCacheLingo(booRecupere) {
+    //
 }
 
 function dessiner() {
@@ -639,7 +657,16 @@ function dessinerPointage(){
 
 }
 
-//function gereActionJoueur(keyCode) {
+function dessinerLingo() {
+    //Garde
+    objC2D.fillStyle = 'yellow';
+
+    tabObjLingo.forEach(element => {
+        if (!element.booRecupere)
+            objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+    });
+}
+
 function gereDeplacementJoueur(keyCode) {
     switch(keyCode) {
         case 37: // Flèche-à-gauche
