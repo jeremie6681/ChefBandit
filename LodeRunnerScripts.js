@@ -105,11 +105,6 @@ class Personnage {
         return (tableau[this.intPositionX - 1][this.intPositionY - 1] == (booEtat ? 5 : 6));
     }
 
-    /*
-    estSurLingo() {
-        return (tableau[this.intPositionX - 1][this.intPositionY -1] == 7);
-    }*/
-
     estSurLingo() {
         return ((tabObjLingo.findIndex(element => ((element.intPositionX == this.intPositionX) && (element.intPositionY == this.intPositionY))) == -1) ? false : true);
     }
@@ -365,7 +360,6 @@ function effacerDessin() {
     
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
-    //gereDeplacementJoueur();
     mettreAJourTrou();
     personnageEnChuteLibre();
     mettreAJourPointage();
@@ -486,7 +480,6 @@ function tomberDansTrou(objPersonnage) {
             //Perte lingo si tombe dans vide
             if (objPersonnage.intNbLingoOr > 0 && objPersonnage.intID != 20) {
                 objPersonnage.intNbLingoOr--;
-                //tableau[element.intPositionX - 1][element.intPositionY -2] = 7;
                 gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
             }
         }
@@ -499,7 +492,6 @@ function mettreAJourLingo() {
     if (objJoueur.estSurLingo()) {
         objJoueur.intNbLingoOr++;
         objPointage.score += 250;
-        //tableau[objJoueur.intPositionX - 1][objJoueur.intPositionY - 1] = 0;
         gestionStockLingo(false, objJoueur.intPositionX, objJoueur.intPositionY);
     }
 
@@ -507,7 +499,6 @@ function mettreAJourLingo() {
     tabObjGardien.forEach(element => {
         if (element.estSurLingo()) {
             element.intNbLingoOr++;
-            //tableau[element.intPositionX - 1][element.intPositionY - 1] = 0;
             gestionStockLingo(false, element.intPositionX, element.intPositionY);
         }
     });
@@ -524,7 +515,7 @@ function mettreAJourNiveau() {
         //une victoire total (niveau 10 terminé)
         //Bravo
     }
-    else if (objJoueur.intPositionX == 19 && objJoueur.intPositionY == 0) {
+    else if (objJoueur.intPositionX == 19 && objJoueur.intPositionY == 1) {
         //Réinisiallise niveau
         objPointage.niveau++;
         objPointage.scoreNiveauPrec = objPointage.score;
@@ -549,14 +540,6 @@ function reinitialiseNiveau() {
 
     objPointage.tempsNiveauSeconde = ajouteZeros(0);
     objPointage.tempsNiveauMinute = ajouteZeros(0);
-    //Remmet lingo à leur place
-    /*
-    tableau[4][1] = 7;
-    tableau[23][3] = 7;
-    tableau[22][6] = 7;
-    tableau[7][12] = 7;
-    tableau[24][12] = 7;
-    tableau[18][14] = 7;*/
 }
 
 //Ajoute ou enlève un lingo
@@ -612,13 +595,6 @@ function dessinerTableau(){
                     objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.restore();
                     break;
-                /*
-                    case 7: 
-                    objC2D.save();
-                    objC2D.fillStyle = "yellow";
-                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
-                    objC2D.restore();
-                    break;*/
             }
         }
     }
@@ -707,13 +683,13 @@ function gereDeplacementJoueur(keyCode) {
             //Démarre chronomètre si partie commencer 
             objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             if (objJoueur.creuserPossible(false))
--                creuser(false);
+                creuser(false);
             break;
         case 90: //z
             //Démarre chronomètre si partie commencer 
             objDateHeureDepart = (objDateHeureDepart == null) ? new Date() : objDateHeureDepart;
             if (objJoueur.creuserPossible(true))
--                creuser(true);
+                creuser(true);
             break;
     }
 }
