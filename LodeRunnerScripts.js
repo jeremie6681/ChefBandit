@@ -840,10 +840,15 @@ function mettreAjourGardes(){
                     if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
                       mourir();
                      }
+                     else if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
+                         tabObjGardien[i].intPositionY++;
+                     }
                     else {
-                        //a ajouter regader si vas marcher sur autre garde
+                        if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
                         tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
                         tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
+                        }
+
                       }
                  }
              }
@@ -861,16 +866,26 @@ function mourir(){
     if (objPointage.vies<=0){
         arreterAnimation();
         console.log('完成したゲーム');
-        effacerDessin();
+        effacerDessin()
+       
         var strTexte ='完成したゲーム';
         objC2D.fillStyle = 'red';
-        objC2D.font = '80px Arial';
+       objC2D.font = '80px Arial';
         objC2D.textBaseLine = 'middle';
         objC2D.textAlign = 'center';
-        objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
-      
+        objC2D.fillText(strTexte,100,100);
+        
     }
     else{
         reinitialiseNiveau();
   } 
+}
+//empeche les gardes d'occuper la meme case
+//retourne un boolean qui indique si le mouvement qu'allait effectuer le garde
+function gardeVasMarcherSurAutreGarde(intX,intY){
+    var booVasMarcherSurAutreGarde= false;
+    tabObjGardien.forEach(function(e){
+        (e.intPositionX == intX&&e.intPositionY == intY)?booVasMarcherSurAutreGarde = true:booVasMarcherSurAutreGarde=booVasMarcherSurAutreGarde;
+    });
+    return booVasMarcherSurAutreGarde;
 }
