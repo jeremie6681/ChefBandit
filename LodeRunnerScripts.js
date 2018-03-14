@@ -421,6 +421,7 @@ function mettreAJourTrou() {
             }
         }
         //gardien dans trou mais va sortir
+        /*
         else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20) && element.objPersoDansTrou.dateHeureTombeTrou != null) {
             //sortir
             var intSecondeEcoulerTombeTrou = Math.round((((objDateheureMaintenant - element.objPersoDansTrou.dateHeureTombeTrou % 3600000) % 60000) / 1000));
@@ -430,7 +431,7 @@ function mettreAJourTrou() {
                 //Possible avec direction mais si un personnage est a cette endroit a ce moment ....
                 
             }
-        }
+        }*/
     });
 
 }
