@@ -450,7 +450,7 @@ function creuser(booDirection) {
     //creuse
     if (objTrouExiste == null) {
         tabObjTrou.push(objNouveauTrou);
-        console.log(objSons.creuser.ended);
+      
         if (!objSons.creuser.ended){
         objSons.creuser.pause();
         objSons.creuser.currentTime = 0;
@@ -522,6 +522,11 @@ function mettreAJourLingo() {
     if (objJoueur.estSurLingo()) {
         objJoueur.intNbLingoOr++;
         objPointage.score += 250;
+
+        if (!objSons.or.ended){
+            objSons.or.pause();
+            objSons.or.currentTime = 0;
+            }
         objSons.or.play();
         gestionStockLingo(false, objJoueur.intPositionX, objJoueur.intPositionY);
     }
