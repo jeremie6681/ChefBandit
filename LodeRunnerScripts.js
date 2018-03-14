@@ -8,6 +8,7 @@ var objJoueur = null;
 var objSons = null;
 var objTextures= null;
 var objPointage = null;
+var objCycleAnimation = null;
 
 var objDateHeureDepart = null;
 var tempsDerdiermv = 0;
@@ -362,13 +363,14 @@ function effacerDessin() {
     
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
+    
     mettreAJourTrou();
     personnageEnChuteLibre();
     mettreAJourPointage();
     mettreAjourGardes();
     mettreAJourLingo();
     mettreAJourNiveau();
-    
+  
 }
 
 //Pour l'instant c'est seulement le chronometre qui est mis à jour ...
@@ -581,6 +583,9 @@ function dessiner() {
     dessinePersonnage();
     dessinerPointage();
     dessinerLingo();
+    if (objPointage.vies<=0){
+        gameOver();
+    }
 }
 
 function dessinerTableau(){
@@ -862,6 +867,7 @@ function calculerHeuristique(voisin,but){
 }
 
 function mettreAjourGardes(){
+ 
     if (objDateHeureDepart != null){
   
      if(Date.now()-tempsDerdiermv>=1000) {
@@ -870,50 +876,34 @@ function mettreAjourGardes(){
             var tabDeplacement = trouverDeplacementGarde(i);
             if (tabDeplacement!=null){
                 if (tabDeplacement[0]!=null){
-                //colision entre le garde et lode
-                    if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
-                      mourir();
+                    //savoir si le gardien doit tomber dans le trou
+                    if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
+                        tabObjGardien[i].intPositionY++;
+                    }
+                    //colision entre le garde et lode
+                    else if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
+                         //mourir();
+                         objPointage.vies --;
+                         reinitialiseNiveau();
                      }
-                     else if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
-                         tabObjGardien[i].intPositionY++;
-                     }
+                    // sinon bouge
                     else {
                         if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
-                        tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
-                        tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
+                            tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
+                            tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
                         }
 
-                      }
-                 }
-             }
-         }
+                    }
+                }
+            }
         }
+    }
             tempsDerdiermv = Date.now();
         }
     
     }
 }
-function mourir(){
-    objPointage.vies --;
 
-    //si toutes les vies sont perdues
-    if (objPointage.vies<=0){
-        arreterAnimation();
-        console.log('完成したゲーム');
-        effacerDessin()
-       
-        var strTexte ='完成したゲーム';
-        objC2D.fillStyle = 'red';
-       objC2D.font = '80px Arial';
-        objC2D.textBaseLine = 'middle';
-        objC2D.textAlign = 'center';
-        objC2D.fillText(strTexte,100,100);
-        
-    }
-    else{
-        reinitialiseNiveau();
-  } 
-}
 //empeche les gardes d'occuper la meme case
 //retourne un boolean qui indique si le mouvement qu'allait effectuer le garde
 function gardeVasMarcherSurAutreGarde(intX,intY){
@@ -922,4 +912,18 @@ function gardeVasMarcherSurAutreGarde(intX,intY){
         (e.intPositionX == intX&&e.intPositionY == intY)?booVasMarcherSurAutreGarde = true:booVasMarcherSurAutreGarde=booVasMarcherSurAutreGarde;
     });
     return booVasMarcherSurAutreGarde;
+}
+function gameOver(){
+    arreterAnimation();
+    console.log('game over');
+    effacerDessin();
+    objC2D.fillStyle='black'
+    objC2D.fillRect(0,0,objCanvas.width,objCanvas.height)
+    var strTexte ='game over';
+    objC2D.fillStyle = 'red';
+    objC2D.font = '80px Arial';
+    objC2D.textBaseLine = 'middle';
+    objC2D.textAlign = 'center';
+    objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
+    
 }
