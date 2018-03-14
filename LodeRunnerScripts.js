@@ -187,12 +187,13 @@ function initAnimation(Canvas){
     objCanvas.focus();
     objC2D = objCanvas.getContext('2d');
 
+    initSons();
     initPointage();
     initTextures();
     initPersonnage();
     initMurs();
     initLingo();
-    
+
     dessiner();
     animer();
 }
@@ -308,17 +309,17 @@ function initSons() {
     objSons.gardeTombeTrou = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonLodePertVie.wav');
+    objSon.setAttribute('src', 'sons/sonLodePerdVie.wav');
     objSon.load();
     objSons.lodePerdVie = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonOr');
+    objSon.setAttribute('src', 'sons/sonOr.wav');
     objSon.load();
     objSons.or = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonPerdreToutesSesVieswav');
+    objSon.setAttribute('src', 'sons/sonPerdreToutesSesVies.wav');
     objSon.load();
     objSons.perdreToutesVies = objSon;
 
@@ -406,6 +407,7 @@ function mettreAJourTrou() {
                 else {
                     //Gardien point de départ
                     //Position aléatoire sur la ligne 2
+                    objSons.gardeMeurt.play();
                     var booPositionValide = false;
                     while(!booPositionValide) {
                         objPersoDansTrou.intPositionX = Math.floor(Math.random() * 15) + 1;
@@ -448,6 +450,12 @@ function creuser(booDirection) {
     //creuse
     if (objTrouExiste == null) {
         tabObjTrou.push(objNouveauTrou);
+        console.log(objSons.creuser.ended);
+        if (!objSons.creuser.ended){
+        objSons.creuser.pause();
+        objSons.creuser.currentTime = 0;
+        }
+        objSons.creuser.play();
     }    
 }
 
@@ -456,15 +464,17 @@ function creuser(booDirection) {
 function refermerTrou(objTrou) {
     tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
     tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
-
+    objSons.remplirBloc.play();
 
 }*/
 
 //Chute libre et tomber dans un trou ...
 function personnageEnChuteLibre() {
     //Joueur
-    if (objJoueur.estEnChuteLibre())
+    if (objJoueur.estEnChuteLibre()){
         objJoueur.deplacement(0,1);
+        objSons.tomber.play();                      ///////////////////////////////////////////////////////ce son est a stopper lorsque lode touche le sol//////////////////////////////////
+    }
     else if (objJoueur.estDansTrou(true))
         tomberDansTrou(objJoueur);
 
@@ -512,6 +522,7 @@ function mettreAJourLingo() {
     if (objJoueur.estSurLingo()) {
         objJoueur.intNbLingoOr++;
         objPointage.score += 250;
+        objSons.or.play();
         gestionStockLingo(false, objJoueur.intPositionX, objJoueur.intPositionY);
     }
 
@@ -539,7 +550,7 @@ function mettreAJourNiveau() {
         //Réinisiallise niveau
         objPointage.niveau++;
         objPointage.scoreNiveauPrec = objPointage.score;
-
+        objSons.finirNiveau.play();
         reinitialiseNiveau();
     }
 }
@@ -575,7 +586,7 @@ function gestionStockLingo(booAction, intPositionX, intPositionY) {
 
 function dessiner() {
     
-    objC2D.fillStyle = 'black';
+    objC2D.fillStyle = 'black'; //couleur de fond du tableau
     objC2D.beginPath();
     objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
     
@@ -591,8 +602,8 @@ function dessiner() {
 
 function dessinerTableau(){
   
-    for (var intCasesX =0;intCasesX<28;intCasesX++){
-        for (var intCasesY =0;intCasesY<17;intCasesY++){
+    for (var intCasesX =0;intCasesX<intTailleTableauX;intCasesX++){
+        for (var intCasesY =0;intCasesY<intTailleTableauY;intCasesY++){
             switch(tableau[intCasesX][intCasesY]){
                 case 1:
                     objC2D.drawImage(objTextures.brique, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
@@ -880,12 +891,13 @@ function mettreAjourGardes(){
                     //savoir si le gardien doit tomber dans le trou
                     if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
                         tabObjGardien[i].intPositionY++;
+                        objSons.gardeTombeTrou.play();
                     }
                     //colision entre le garde et lode
                     else if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
-                         //mourir();
                          objPointage.vies --;
                          reinitialiseNiveau();
+                         objSons.lodePerdVie.play();
                      }
                     // sinon bouge
                     else {
@@ -915,6 +927,7 @@ function gardeVasMarcherSurAutreGarde(intX,intY){
     return booVasMarcherSurAutreGarde;
 }
 function gameOver(){
+    objSons.lodePerdVie.pause();
     arreterAnimation();
     console.log('game over');
     effacerDessin();
@@ -926,5 +939,6 @@ function gameOver(){
     objC2D.textBaseLine = 'middle';
     objC2D.textAlign = 'center';
     objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
+    objSons.perdreToutesVies.play();
     
 }
