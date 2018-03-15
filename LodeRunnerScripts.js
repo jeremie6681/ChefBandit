@@ -217,6 +217,10 @@ function initTextures(){
     objImage = new Image();
     objImage.src = 'textures/barre.png';
     objTextures.barre = objImage;
+
+    objImage = new Image();
+    objImage.src = 'textures/or.png';
+    objTextures.or = objImage;
 }
 
 function initMurs() {
@@ -473,10 +477,14 @@ function personnageEnChuteLibre() {
     //Joueur
     if (objJoueur.estEnChuteLibre()){
         objJoueur.deplacement(0,1);
-        objSons.tomber.play();                      ///////////////////////////////////////////////////////ce son est a stopper lorsque lode touche le sol//////////////////////////////////
+        objSons.tomber.play();                     
     }
     else if (objJoueur.estDansTrou(true))
         tomberDansTrou(objJoueur);
+    else{
+        objSons.tomber.pause();
+        objSons.tomber.currentTime = 0;
+    }
 
     tabObjGardien.forEach(objGardien => {
         
@@ -689,10 +697,11 @@ function dessinerPointage(){
 }
 
 function dessinerLingo() {
-    objC2D.fillStyle = 'yellow';
+    //objC2D.fillStyle = 'yellow';
 
     tabObjLingo.forEach(element => {
-        objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+       // objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+       objC2D.drawImage(objTextures.or, ((element.intPositionX)*intTailleCases),((element.intPositionY)*intTailleCases),intTailleCases,intTailleCases)
     });
 }
 
