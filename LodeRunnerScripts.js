@@ -221,6 +221,10 @@ function initTextures(){
     objImage = new Image();
     objImage.src = 'textures/or.png';
     objTextures.or = objImage;
+
+    objImage = new Image();
+    objImage.src = 'textures/garde.png';
+    objTextures.garde = objImage;
 }
 
 function initMurs() {
@@ -678,8 +682,9 @@ function dessinePersonnage() {
 
     //Garde
     tabObjGardien.forEach(element => {
-        objC2D.fillStyle = element.couleur;
-        objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+        //objC2D.fillStyle = element.couleur;
+       // objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+       objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases),((element.intPositionY)*intTailleCases),intTailleCases,intTailleCases)
     });
 }
 
