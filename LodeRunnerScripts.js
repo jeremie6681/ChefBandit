@@ -8,6 +8,7 @@ var objJoueur = null;
 var objSons = null;
 var objTextures= null;
 var objPointage = null;
+var objCycleAnimation = null;
 
 var objDateHeureDepart = null;
 var tempsDerdiermv = 0;
@@ -74,6 +75,8 @@ class Personnage {
         this.intNbLingoOr = 0;
         this.booChuteLibre = false;
         this.booBloquee = false;
+        this.dateHeureTombeTrou = null;
+        this.booDirection = false; //Pour les animations, Gauche -> True / Droit -> false
 
         //Personnage Joueur
         if(booType) {
@@ -184,12 +187,13 @@ function initAnimation(Canvas){
     objCanvas.focus();
     objC2D = objCanvas.getContext('2d');
 
+    initSons();
     initPointage();
     initTextures();
     initPersonnage();
     initMurs();
     initLingo();
-    
+
     dessiner();
     animer();
 }
@@ -213,6 +217,14 @@ function initTextures(){
     objImage = new Image();
     objImage.src = 'textures/barre.png';
     objTextures.barre = objImage;
+
+    objImage = new Image();
+    objImage.src = 'textures/or.png';
+    objTextures.or = objImage;
+
+    objImage = new Image();
+    objImage.src = 'textures/garde.png';
+    objTextures.garde = objImage;
 }
 
 function initMurs() {
@@ -305,17 +317,17 @@ function initSons() {
     objSons.gardeTombeTrou = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonLodePertVie.wav');
+    objSon.setAttribute('src', 'sons/sonLodePerdVie.wav');
     objSon.load();
     objSons.lodePerdVie = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonOr');
+    objSon.setAttribute('src', 'sons/sonOr.wav');
     objSon.load();
     objSons.or = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonPerdreToutesSesVieswav');
+    objSon.setAttribute('src', 'sons/sonPerdreToutesSesVies.wav');
     objSon.load();
     objSons.perdreToutesVies = objSon;
 
@@ -366,7 +378,7 @@ function mettreAjourAnimation() {
     mettreAjourGardes();
     mettreAJourLingo();
     mettreAJourNiveau();
-    
+  
 }
 
 //Pour l'instant c'est seulement le chronometre qui est mis à jour ...
@@ -402,6 +414,7 @@ function mettreAJourTrou() {
                 else {
                     //Gardien point de départ
                     //Position aléatoire sur la ligne 2
+                    objSons.gardeMeurt.play();
                     var booPositionValide = false;
                     while(!booPositionValide) {
                         objPersoDansTrou.intPositionX = Math.floor(Math.random() * 15) + 1;
@@ -417,9 +430,17 @@ function mettreAJourTrou() {
             }
         }
         //gardien dans trou mais va sortir
-        else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20)) {
+        /*
+        else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20) && element.objPersoDansTrou.dateHeureTombeTrou != null) {
             //sortir
-        }
+            var intSecondeEcoulerTombeTrou = Math.round((((objDateheureMaintenant - element.objPersoDansTrou.dateHeureTombeTrou % 3600000) % 60000) / 1000));
+
+            if (intSecondeEcoulerTombeTrou == 4) {
+                //Je suis pas sur d'ou je dois le faire réaparaitre
+                //Possible avec direction mais si un personnage est a cette endroit a ce moment ....
+                
+            }
+        }*/
     });
 
 }
@@ -436,6 +457,12 @@ function creuser(booDirection) {
     //creuse
     if (objTrouExiste == null) {
         tabObjTrou.push(objNouveauTrou);
+      
+        if (!objSons.creuser.ended){
+        objSons.creuser.pause();
+        objSons.creuser.currentTime = 0;
+        }
+        objSons.creuser.play();
     }    
 }
 
@@ -444,17 +471,23 @@ function creuser(booDirection) {
 function refermerTrou(objTrou) {
     tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
     tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
-
+    objSons.remplirBloc.play();
 
 }*/
 
 //Chute libre et tomber dans un trou ...
 function personnageEnChuteLibre() {
     //Joueur
-    if (objJoueur.estEnChuteLibre())
+    if (objJoueur.estEnChuteLibre()){
         objJoueur.deplacement(0,1);
+        objSons.tomber.play();                     
+    }
     else if (objJoueur.estDansTrou(true))
         tomberDansTrou(objJoueur);
+    else{
+        objSons.tomber.pause();
+        objSons.tomber.currentTime = 0;
+    }
 
     tabObjGardien.forEach(objGardien => {
         
@@ -482,8 +515,16 @@ function tomberDansTrou(objPersonnage) {
                 objPersonnage.intNbLingoOr--;
                 gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
             }
+
+            objPersonnage.dateHeureTombeTrou = new Date();
         }
             
+    });
+}
+
+function refermeToutLesTrous() {
+    tabObjTrou.forEach(element => {
+        element.objDateHeureTomberTrou.setDate()
     });
 }
 
@@ -492,6 +533,12 @@ function mettreAJourLingo() {
     if (objJoueur.estSurLingo()) {
         objJoueur.intNbLingoOr++;
         objPointage.score += 250;
+
+        if (!objSons.or.ended){
+            objSons.or.pause();
+            objSons.or.currentTime = 0;
+            }
+        objSons.or.play();
         gestionStockLingo(false, objJoueur.intPositionX, objJoueur.intPositionY);
     }
 
@@ -519,7 +566,7 @@ function mettreAJourNiveau() {
         //Réinisiallise niveau
         objPointage.niveau++;
         objPointage.scoreNiveauPrec = objPointage.score;
-
+        objSons.finirNiveau.play();
         reinitialiseNiveau();
     }
 }
@@ -555,7 +602,7 @@ function gestionStockLingo(booAction, intPositionX, intPositionY) {
 
 function dessiner() {
     
-    objC2D.fillStyle = 'black';
+    objC2D.fillStyle = 'black'; //couleur de fond du tableau
     objC2D.beginPath();
     objC2D.fillRect(0,0, objCanvas.width, objCanvas.height);
     
@@ -564,12 +611,15 @@ function dessiner() {
     dessinePersonnage();
     dessinerPointage();
     dessinerLingo();
+    if (objPointage.vies<=0){
+        gameOver();
+    }
 }
 
 function dessinerTableau(){
   
-    for (var intCasesX =0;intCasesX<28;intCasesX++){
-        for (var intCasesY =0;intCasesY<17;intCasesY++){
+    for (var intCasesX =0;intCasesX<intTailleTableauX;intCasesX++){
+        for (var intCasesY =0;intCasesY<intTailleTableauY;intCasesY++){
             switch(tableau[intCasesX][intCasesY]){
                 case 1:
                     objC2D.drawImage(objTextures.brique, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
@@ -631,8 +681,9 @@ function dessinePersonnage() {
 
     //Garde
     tabObjGardien.forEach(element => {
-        objC2D.fillStyle = element.couleur;
-        objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+        //objC2D.fillStyle = element.couleur;
+       // objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+       objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases),((element.intPositionY)*intTailleCases),intTailleCases,intTailleCases)
     });
 }
 
@@ -650,10 +701,11 @@ function dessinerPointage(){
 }
 
 function dessinerLingo() {
-    objC2D.fillStyle = 'yellow';
+    //objC2D.fillStyle = 'yellow';
 
     tabObjLingo.forEach(element => {
-        objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+       // objC2D.fillRect(((element.intPositionX - 1)*intTailleCases)+30,((element.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+       objC2D.drawImage(objTextures.or, ((element.intPositionX)*intTailleCases),((element.intPositionY)*intTailleCases),intTailleCases,intTailleCases)
     });
 }
 
@@ -845,6 +897,7 @@ function calculerHeuristique(voisin,but){
 }
 
 function mettreAjourGardes(){
+ 
     if (objDateHeureDepart != null){
   
      if(Date.now()-tempsDerdiermv>=1000) {
@@ -853,50 +906,35 @@ function mettreAjourGardes(){
             var tabDeplacement = trouverDeplacementGarde(i);
             if (tabDeplacement!=null){
                 if (tabDeplacement[0]!=null){
-                //colision entre le garde et lode
-                    if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
-                      mourir();
+                    //savoir si le gardien doit tomber dans le trou
+                    if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
+                        tabObjGardien[i].intPositionY++;
+                        objSons.gardeTombeTrou.play();
+                    }
+                    //colision entre le garde et lode
+                    else if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
+                         objPointage.vies --;
+                         reinitialiseNiveau();
+                         objSons.lodePerdVie.play();
                      }
-                     else if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
-                         tabObjGardien[i].intPositionY++;
-                     }
+                    // sinon bouge
                     else {
                         if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
-                        tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
-                        tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
+                            tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
+                            tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
                         }
 
-                      }
-                 }
-             }
-         }
+                    }
+                }
+            }
         }
+    }
             tempsDerdiermv = Date.now();
         }
     
     }
 }
-function mourir(){
-    objPointage.vies --;
 
-    //si toutes les vies sont perdues
-    if (objPointage.vies<=0){
-        arreterAnimation();
-        console.log('完成したゲーム');
-        effacerDessin()
-       
-        var strTexte ='完成したゲーム';
-        objC2D.fillStyle = 'red';
-       objC2D.font = '80px Arial';
-        objC2D.textBaseLine = 'middle';
-        objC2D.textAlign = 'center';
-        objC2D.fillText(strTexte,100,100);
-        
-    }
-    else{
-        reinitialiseNiveau();
-  } 
-}
 //empeche les gardes d'occuper la meme case
 //retourne un boolean qui indique si le mouvement qu'allait effectuer le garde
 function gardeVasMarcherSurAutreGarde(intX,intY){
@@ -905,4 +943,20 @@ function gardeVasMarcherSurAutreGarde(intX,intY){
         (e.intPositionX == intX&&e.intPositionY == intY)?booVasMarcherSurAutreGarde = true:booVasMarcherSurAutreGarde=booVasMarcherSurAutreGarde;
     });
     return booVasMarcherSurAutreGarde;
+}
+function gameOver(){
+    objSons.lodePerdVie.pause();
+    arreterAnimation();
+    console.log('game over');
+    effacerDessin();
+    objC2D.fillStyle='black'
+    objC2D.fillRect(0,0,objCanvas.width,objCanvas.height)
+    var strTexte ='game over';
+    objC2D.fillStyle = 'red';
+    objC2D.font = '80px Arial';
+    objC2D.textBaseLine = 'middle';
+    objC2D.textAlign = 'center';
+    objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
+    objSons.perdreToutesVies.play();
+    
 }
