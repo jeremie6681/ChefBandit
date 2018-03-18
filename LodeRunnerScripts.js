@@ -91,16 +91,25 @@ class Personnage {
             this.couleur = 'purple'; //tempo
 
             var booPositionValide = false;
+            var x = 0;
+            var y = 0;
             while(!booPositionValide) {
-                this.intPositionX = Math.floor(Math.random() * 28) + 1;
-                this.intPositionY = Math.floor(Math.random() * 13) + 1;
-                booPositionValide = this.estSurPlateForme() && (tableau[this.intPositionX - 1][this.intPositionY - 1] == 0);
+                x = Math.floor(Math.random() * 28) + 1;
+                y = Math.floor(Math.random() * 13) + 1;
+                booPositionValide = this.estSurPlateForme(x,y) && (tableau[x -1][y -1] == 0) && emplacementSansPersonnage(x, y);
             }
+
+            this.intPositionX = x;
+            this.intPositionY = y;
         }
     }
 
     estSurPlateForme() {
         return (tableau[this.intPositionX - 1][this.intPositionY] == 1);
+    }
+
+    estSurPlateForme(intX,intY) {
+        return (tableau[intX - 1][intY] == 1);
     }
 
     //paramètre true => trou vide / paramètre false => trou plein
@@ -193,6 +202,7 @@ function initAnimation(Canvas){
     initPersonnage();
     initMurs();
     initLingo();
+    initTrou();
 
     dessiner();
     animer();
@@ -273,7 +283,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau + 2); intIndex++) {
+    for(var intIndex = 0; intIndex<(objPointage.niveau); intIndex++) {
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -348,6 +358,10 @@ function initLingo() {
     tabObjLingo.push(new lingo(19,15));
 }
 
+function initTrou() {
+    tabObjTrou = new Array();
+}
+
 // Un cycle d'animation	
 function animer() {
     // Requête pour le prochain cycle
@@ -399,12 +413,8 @@ function mettreAJourTrou() {
     var objDateheureMaintenant = new Date();
     tabObjTrou.forEach( element => {
         var intSecondeEcoulerTrou = Math.round((((objDateheureMaintenant - element.objDateHeureTrou % 3600000) % 60000) / 1000));
-        //Referme trou
+
         if (intSecondeEcoulerTrou == 8) {
-            //refermerTrou(element);
-            tabObjTrou.splice(tabObjTrou.indexOf(element),1);
-            tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
-            
             //Personne dans le trou et va mourir
             if (element.objPersonnageTrou != null) {
                 var objPersoDansTrou = element.objPersonnageTrou;
@@ -416,31 +426,39 @@ function mettreAJourTrou() {
                     //Position aléatoire sur la ligne 2
                     objSons.gardeMeurt.play();
                     var booPositionValide = false;
+                    var x;
+                    var y;
                     while(!booPositionValide) {
-                        objPersoDansTrou.intPositionX = Math.floor(Math.random() * 15) + 1;
-                        objPersoDansTrou.intPositionY = 2;
-                        booPositionValide = objPersoDansTrou.estSurPlateForme() && (tableau[objPersoDansTrou.intPositionX - 1][objPersoDansTrou.intPositionY - 1] == 0);
+                        x = Math.floor(Math.random() * 15) + 1;
+                        y = 2;
+                        booPositionValide = objPersoDansTrou.estSurPlateForme(x,y) && (tableau[x -1][y -1] == 0) && emplacementSansPersonnage(x,y);
                     }
-
+                    
+                    objPersoDansTrou.intPositionX = x;
+                    objPersoDansTrou.intPositionY = y;
                     objPersoDansTrou.booBloquee = false;
 
                     //Point car garde meurt
                     objPointage.score += 75;
                 }
             }
+
+            refermerTrou(element);
         }
         //gardien dans trou mais va sortir
-        /*
-        else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20) && element.objPersoDansTrou.dateHeureTombeTrou != null) {
+        else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20) && element.objPersonnageTrou.dateHeureTombeTrou != null) {
             //sortir
-            var intSecondeEcoulerTombeTrou = Math.round((((objDateheureMaintenant - element.objPersoDansTrou.dateHeureTombeTrou % 3600000) % 60000) / 1000));
+            var intSecondeEcoulerTombeTrou = Math.round((((objDateheureMaintenant - element.objPersonnageTrou.dateHeureTombeTrou % 3600000) % 60000) / 1000));
+            
+            //Si personnage au point au dessu du trou quand doit réaparaitre, il attends
+            if ((intSecondeEcoulerTombeTrou >= 4) && emplacementSansPersonnage(element.intPositionX, (element.intPositionY -1))) {
+                element.objPersonnageTrou.intPositionX = element.intPositionX;
+                element.objPersonnageTrou.intPositionY = (element.intPositionY - 1);
+                element.objPersonnageTrou.booBloquee = false;
 
-            if (intSecondeEcoulerTombeTrou == 4) {
-                //Je suis pas sur d'ou je dois le faire réaparaitre
-                //Possible avec direction mais si un personnage est a cette endroit a ce moment ....
-                
+                refermerTrou(element);
             }
-        }*/
+        }
     });
 
 }
@@ -467,13 +485,12 @@ function creuser(booDirection) {
 }
 
 //Referme un trou
-/*
 function refermerTrou(objTrou) {
     tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
     tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
     objSons.remplirBloc.play();
 
-}*/
+}
 
 //Chute libre et tomber dans un trou ...
 function personnageEnChuteLibre() {
@@ -500,10 +517,18 @@ function personnageEnChuteLibre() {
     });
 }
 
+//Vérifie si la position est occupé par un autre personnage
+function emplacementSansPersonnage(intX,intY) {
+    var intIndexGardeSiPresent = tabObjGardien.findIndex(element => ((element.intPositionX == intX) && (element.intPositionY == intY)));
+
+    return (!((objJoueur.intPositionX == intX) && (objJoueur.intPositionY == intY)) && (intIndexGardeSiPresent == -1));
+}
+
 function tomberDansTrou(objPersonnage) {
 
     tabObjTrou.forEach(element => {
         if ((objPersonnage.intPositionX == element.intPositionX) && (objPersonnage.intPositionY == element.intPositionY)) {
+            objPersonnage.dateHeureTombeTrou = new Date();
             element.objPersonnageTrou = objPersonnage;
             tableau[element.intPositionX - 1][element.intPositionY - 1] = 6;
 
@@ -515,8 +540,6 @@ function tomberDansTrou(objPersonnage) {
                 objPersonnage.intNbLingoOr--;
                 gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
             }
-
-            objPersonnage.dateHeureTombeTrou = new Date();
         }
             
     });
@@ -524,7 +547,7 @@ function tomberDansTrou(objPersonnage) {
 
 function refermeToutLesTrous() {
     tabObjTrou.forEach(element => {
-        element.objDateHeureTomberTrou.setDate()
+        tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
     });
 }
 
@@ -584,6 +607,9 @@ function reinitialiseNiveau() {
     initPersonnage();
     initLingo();
     echelleSortie(false);
+    refermeToutLesTrous();
+    initTrou();
+    console.log('die niveau');
 
     objPointage.tempsNiveauSeconde = ajouteZeros(0);
     objPointage.tempsNiveauMinute = ajouteZeros(0);
