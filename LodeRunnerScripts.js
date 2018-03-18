@@ -54,21 +54,6 @@ var tableau =[
     [0,0,0,0,1,0,0,1,0,0,0,0,0,3,3,1,4]
     ];
 
-/* //pas sur
-const Direction = {
-    HAUT: new Position(0,-1),
-    BAS: new Position(0,1),
-    GAUCHE: new Position(-1,0),
-    DROITE: new Position(1,0), 
-}
-
-class Position {
-    constructor(X,Y) {
-        this.X = X;
-        this.Y = Y;
-    }
-}*/
-
 //true -> Joueur / false -> Gardien
 class Personnage {
     constructor(booType) {
@@ -489,7 +474,6 @@ function refermerTrou(objTrou) {
     tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
     tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
     objSons.remplirBloc.play();
-
 }
 
 //Chute libre et tomber dans un trou ...
@@ -541,7 +525,6 @@ function tomberDansTrou(objPersonnage) {
                 gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
             }
         }
-            
     });
 }
 
@@ -609,7 +592,6 @@ function reinitialiseNiveau() {
     echelleSortie(false);
     refermeToutLesTrous();
     initTrou();
-    console.log('die niveau');
 
     objPointage.tempsNiveauSeconde = ajouteZeros(0);
     objPointage.tempsNiveauMinute = ajouteZeros(0);
