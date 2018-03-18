@@ -18,7 +18,7 @@ const intTailleTableauX = 28;
 const intTailleTableauY = 17;
 
 var tabObjMurs = null;
-var tabObjTrou = new Array();
+var tabObjTrou = null;
 var tabGrilleAi = null;
 var tabObjGardien = null;
 var tabObjLingo = null;
@@ -133,7 +133,7 @@ class Personnage {
             booPossible = false;
         }
 
-        if(booFaitDeplacement && booPossible && !this.booChuteLibre) {
+        if(booFaitDeplacement && booPossible && !this.booChuteLibre && !this.booBloquee) {
             this.deplacement(intFuturX,intFuturY);
         }
 
@@ -158,6 +158,7 @@ class trou {
         this.objDateHeureTrou = new Date();
         this.objPersonnageTrou = null;
         this.objDateHeureTomberTrou = null;
+        this.booSupposerReferme = false; //Utilise quand un trou devrait etre refermer mais que le gardien ne peut réaparaitre
 
         tableau[this.intPositionX -1][this.intPositionY -1] = 5;
     }
@@ -268,7 +269,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau); intIndex++) {
+    for(var intIndex = 0; intIndex<(objPointage.niveau + 12); intIndex++) {
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -399,12 +400,15 @@ function mettreAJourTrou() {
     tabObjTrou.forEach( element => {
         var intSecondeEcoulerTrou = Math.round((((objDateheureMaintenant - element.objDateHeureTrou % 3600000) % 60000) / 1000));
 
-        if (intSecondeEcoulerTrou == 8) {
+        if (intSecondeEcoulerTrou == 8 && !element.booSupposerReferme) {
             //Personne dans le trou et va mourir
             if (element.objPersonnageTrou != null) {
                 var objPersoDansTrou = element.objPersonnageTrou;
                 if (objPersoDansTrou.intID == 20) {
-                    //perdre vie
+                    objPointage.vies--;
+                    objPointage.score = objPointage.scoreNiveauPrec;
+                    //Animation mort, son ??
+                    reinitialiseNiveau();
                 }
                 else {
                     //Gardien point de départ
@@ -432,6 +436,7 @@ function mettreAJourTrou() {
         }
         //gardien dans trou mais va sortir
         else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20) && element.objPersonnageTrou.dateHeureTombeTrou != null) {
+            element.booSupposerReferme = true;
             //sortir
             var intSecondeEcoulerTombeTrou = Math.round((((objDateheureMaintenant - element.objPersonnageTrou.dateHeureTombeTrou % 3600000) % 60000) / 1000));
             
@@ -445,7 +450,6 @@ function mettreAJourTrou() {
             }
         }
     });
-
 }
 
 //gauche -> true / droite -> false
@@ -474,6 +478,12 @@ function refermerTrou(objTrou) {
     tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
     tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
     objSons.remplirBloc.play();
+}
+
+function refermeToutLesTrous() {
+    tabObjTrou.forEach(element => {
+        tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
+    });
 }
 
 //Chute libre et tomber dans un trou ...
@@ -518,6 +528,9 @@ function tomberDansTrou(objPersonnage) {
 
             if (objPersonnage.intID != 20)
                 objPointage.score += 75;
+            else {
+                objPersonnage.booBloquee = true;
+            }
 
             //Perte lingo si tombe dans vide
             if (objPersonnage.intNbLingoOr > 0 && objPersonnage.intID != 20) {
@@ -525,12 +538,6 @@ function tomberDansTrou(objPersonnage) {
                 gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
             }
         }
-    });
-}
-
-function refermeToutLesTrous() {
-    tabObjTrou.forEach(element => {
-        tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
     });
 }
 
@@ -625,9 +632,10 @@ function dessiner() {
 }
 
 function dessinerTableau(){
-  
-    for (var intCasesX =0;intCasesX<intTailleTableauX;intCasesX++){
-        for (var intCasesY =0;intCasesY<intTailleTableauY;intCasesY++){
+    var intCasesX;
+    for (intCasesX =0;intCasesX<intTailleTableauX;intCasesX++){
+        var intCasesY;
+        for (intCasesY =0;intCasesY<intTailleTableauY;intCasesY++){
             switch(tableau[intCasesX][intCasesY]){
                 case 1:
                     objC2D.drawImage(objTextures.brique, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
@@ -908,38 +916,39 @@ function mettreAjourGardes(){
  
     if (objDateHeureDepart != null){
   
-     if(Date.now()-tempsDerdiermv>=1000) {
-        for(var i= 0 ; i<tabObjGardien.length;i++){
-            if (!tabObjGardien[i].booBloquee){
-            var tabDeplacement = trouverDeplacementGarde(i);
-            if (tabDeplacement!=null){
-                if (tabDeplacement[0]!=null){
-                    //savoir si le gardien doit tomber dans le trou
-                    if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
-                        tabObjGardien[i].intPositionY++;
-                        objSons.gardeTombeTrou.play();
-                    }
-                    //colision entre le garde et lode
-                    else if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
-                         objPointage.vies --;
-                         reinitialiseNiveau();
-                         objSons.lodePerdVie.play();
-                     }
-                    // sinon bouge
-                    else {
-                        if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
-                            tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
-                            tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
-                        }
+        if(Date.now()-tempsDerdiermv>=1000) {
+            var i;
+            var intDimention = tabObjGardien.length;
+            for(i= 0 ; i<intDimention;i++){
+                if (!tabObjGardien[i].booBloquee){
+                    var tabDeplacement = trouverDeplacementGarde(i);
+                    if (tabDeplacement!=null){
+                        if (tabDeplacement[0]!=null){
+                            //savoir si le gardien doit tomber dans le trou
+                            if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
+                                tabObjGardien[i].intPositionY++;
+                                objSons.gardeTombeTrou.play();
+                            }
+                            //colision entre le garde et lode
+                            else if (tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY){
+                                objPointage.vies --;
+                                reinitialiseNiveau();
+                                objSons.lodePerdVie.play();
+                            }
+                            // sinon bouge
+                            else {
+                                if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
+                                    tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
+                                    tabObjGardien[i].intPositionY =tabDeplacement[0].intY+1;
+                                }
 
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
             tempsDerdiermv = Date.now();
         }
-    
     }
 }
 
