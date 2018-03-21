@@ -269,7 +269,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau + 12); intIndex++) {
+    for(var intIndex = 0; intIndex<(objPointage.niveau + 2); intIndex++) {
         tabObjGardien.push(new Personnage(false));
     }
 }
