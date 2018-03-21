@@ -286,7 +286,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau ); intIndex++) {//+2
+    for(var intIndex = 0; intIndex<(objPointage.niveau + 1); intIndex++) {//+2
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -717,7 +717,7 @@ function dessinePersonnage() {
         objC2D.fillStyle = 'purple';
         objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffSetY,intTailleCases,intTailleCases);
         //element.fltOffSetX += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0];
-       // element.fltOffSetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
+        //element.fltOffSetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
         
        console.log(element.fltOffsetX+" " +element.fltOffsetY);
       // objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases)
