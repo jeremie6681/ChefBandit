@@ -202,11 +202,11 @@ function initAnimation(Canvas){
 function initAnimationsGardes(){
     objAnimationsGarde = new Object();
     objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.courrirgaucheGarde =  construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(60,[],395/20,219/6)
     objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
     objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(60,[[19,5]],395/20,219/6)
+    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(60,[[1,5]],395/20,219/6)
     objAnimationsGarde.tomberGarde =  construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
     objAnimationsGarde.immobileGarde= construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
 }
@@ -717,7 +717,7 @@ function dessinePersonnage() {
         objC2D.fillStyle = 'purple';
         objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffSetY,intTailleCases,intTailleCases);
         //element.fltOffSetX += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0];
-       // element.fltOffSetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
+        //element.fltOffSetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
         
        console.log(element.fltOffsetX+" " +element.fltOffsetY);
       // objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases)
@@ -1015,7 +1015,7 @@ function gagnerPartie(){
     objC2D.textAlign = 'center';
     objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
 }
-function construireAnimationSprite(fltDureeFrame,tabCoordonesAnimation,intLargeurColonne,intHauteurLignes){
+function construireAnimationSprite(intDureeFrame,tabCoordonesAnimation,intLargeurColonne,intHauteurLignes){
     var objAnimation = new Object();
     objAnimation.tabObjFrame = [];
     for(var i = 0 ;i<tabCoordonesAnimation.length;i++){
@@ -1025,8 +1025,9 @@ function construireAnimationSprite(fltDureeFrame,tabCoordonesAnimation,intLargeu
         objFrame.intY=intHauteurLignes*tabCoordonesAnimation[i][1];
         objAnimation.tabObjFrame[i]=objFrame;
     }
-    objAnimation.intDureeFrame;
-    objAnimation.fltTempsEntreChangementImg=fltDureeFrame/tabCoordonesAnimation.length;
+    objAnimation.intDureeFrame  = intDureeFrame;
+    objAnimation.fltTempsEntreChangementImg=intDureeFrame/tabCoordonesAnimation.length;
+    objAnimation.intNbrFrameDepuisDernierAnim= 0;
     return objAnimation;
 }
 function mettreAjourAnimationGarde(){
