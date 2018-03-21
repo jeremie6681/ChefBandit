@@ -270,6 +270,7 @@ function initMurs() {
     objMur.intYFin = objCanvas.height;
     objMur.strCouleur = 'darkgrey';
     tabObjMurs.push(objMur);
+    
     //mur bas
     objMur = new Object();
     objMur.intXDebut = 0;
@@ -588,10 +589,6 @@ function mettreAJourNiveau() {
         //fait apparaitre échelle pour le prochain niveau
         echelleSortie(true);
     }
-    else if (objJoueur.intNbLingoOr == 6 && objPointage.niveau == 10) {
-        //une victoire total (niveau 10 terminé)
-        //Bravo
-    }
     else if (objJoueur.intPositionX == 19 && objJoueur.intPositionY == 1) {
         //Réinisiallise niveau
         objPointage.niveau++;
@@ -645,6 +642,9 @@ function dessiner() {
     dessinerLingo();
     if (objPointage.vies<=0){
         gameOver();
+    }
+    else if (objJoueur.intNbLingoOr == 6 && objPointage.niveau == 10){
+        gagnerPartie();
     }
 }
 
