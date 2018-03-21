@@ -101,6 +101,8 @@ class Personnage {
         return (tableau[intX - 1][intY] == 1);
     }
 
+
+
     //paramètre true => trou vide / paramètre false => trou plein
     estDansTrou(booEtat) {
         return (tableau[this.intPositionX - 1][this.intPositionY - 1] == (booEtat ? 5 : 6));
@@ -452,11 +454,12 @@ function mettreAJourTrou() {
             refermerTrou(element);
         }
         //gardien dans trou mais va sortir
-        else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20) && element.objPersonnageTrou.dateHeureTombeTrou != null) {
-            element.booSupposerReferme = true;
-            //sortir
+        else if (element.objPersonnageTrou != null && (element.objPersonnageTrou.intID != 20)) {
             var intSecondeEcoulerTombeTrou = Math.round((((objDateheureMaintenant - element.objPersonnageTrou.dateHeureTombeTrou % 3600000) % 60000) / 1000));
             
+            if (intSecondeEcoulerTombeTrou == 4)
+                element.booSupposerReferme = true;
+
             //Si personnage au point au dessu du trou quand doit réaparaitre, il attends
             if ((intSecondeEcoulerTombeTrou >= 4) && emplacementSansPersonnage(element.intPositionX, (element.intPositionY -1))) {
                 element.objPersonnageTrou.intPositionX = element.intPositionX;
