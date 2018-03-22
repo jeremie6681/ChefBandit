@@ -152,8 +152,12 @@ class Personnage {
     }
 
     //true -> gauche / false -> droite
+    //Gestion si sur brique, pas d'échelle em haut, pas de corde, pas de lingo ....
     creuserPossible(booDirection) {
-        return (tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY] == 1);
+        return ((tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY] == 1) &&
+                (tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY - 1] == 0) && 
+                ((tabObjLingo.findIndex(element => ((element.intPositionX == (this.intPositionX + (booDirection ? -1 : 1))) && 
+                                                    (element.intPositionY == (this.intPositionY)))) == -1) ? true : false));
     }
 }
 
