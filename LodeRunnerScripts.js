@@ -718,10 +718,14 @@ function dessinePersonnage() {
     //Garde
     tabObjGardien.forEach(element => {
         objC2D.fillStyle = 'purple';
-        objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffSetY,intTailleCases,intTailleCases);
-        //element.fltOffSetX += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0];
-        //element.fltOffSetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
-        
+        objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
+        element.fltOffsetX += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0];
+        element.fltOffsetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
+       /* if (element.fltOffsetX>30||element.fltOffsetX>30){
+            element.fltOffsetX = 0;
+            element.fltOffsetX = 0;
+            element.booBloquee= false;
+        }*/
        console.log(element.fltOffsetX+" " +element.fltOffsetY);
       // objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases)
     });
@@ -959,12 +963,13 @@ function mettreAjourGardes(){
                             else {
                                 if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
                                     
+                                    tabObjGardien[i].fltOffsetX = 0;
+                                    tabObjGardien[i].fltOffsetY = 0;
                                     tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
                                     mettreAjourAnimationGarde()
                                     tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
                                     tabObjGardien[i].intPositionY = tabDeplacement[0].intY+1;
-                                    tabObjGardien[i].fltOffsetX = 0;
-                                    tabObjGardien[i].fltOffsetY = 0;
+                                   // tabObjGardien[i].booBloquee = true;
                                     
                                 }
 
