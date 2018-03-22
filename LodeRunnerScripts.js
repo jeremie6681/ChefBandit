@@ -86,8 +86,8 @@ class Personnage {
             
             this.intPositionX = x;
             this.intPositionY = y;
-            this.fltOffSetX= 0;
-            this.fltOffSetY= 0;
+            this.fltOffsetX= 0;
+            this.fltOffsetY= 0;
             this.animation= objAnimationsGarde.immobileGarde;
             this.tabDirection =[0,0];
         }
@@ -154,7 +154,6 @@ class Personnage {
     //true -> gauche / false -> droite
     //Gestion si sur brique, pas d'échelle em haut, pas de corde, pas de lingo ....
     creuserPossible(booDirection) {
-        return (tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY] == 1);
         return ((tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY] == 1) &&
                 (tableau[this.intPositionX + (booDirection ? -2 : 0)][this.intPositionY - 1] == 0) && 
                 ((tabObjLingo.findIndex(element => ((element.intPositionX == (this.intPositionX + (booDirection ? -1 : 1))) && 
@@ -208,14 +207,14 @@ function initAnimation(Canvas){
 //395x219
 function initAnimationsGardes(){
     objAnimationsGarde = new Object();
-    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(60,[],395/20,219/6)
-    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(60,[[19,5]],395/20,219/6)
-    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(60,[[1,5]],395/20,219/6)
-    objAnimationsGarde.tomberGarde =  construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.immobileGarde= construireAnimationSprite(60,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(200,[],395/20,219/6)
+    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(200,[[19,5]],395/20,219/6)
+    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(200,[[1,5]],395/20,219/6)
+    objAnimationsGarde.tomberGarde =  construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.immobileGarde= construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
 }
 
 function initTextures(){
@@ -724,13 +723,11 @@ function dessinePersonnage() {
     tabObjGardien.forEach(element => {
         objC2D.fillStyle = 'purple';
         objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
-        element.fltOffsetX += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0];
-        element.fltOffsetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
-       /* if (element.fltOffsetX>30||element.fltOffsetX>30){
-            element.fltOffsetX = 0;
-            element.fltOffsetX = 0;
-            element.booBloquee= false;
-        }*/
+        element.fltOffsetX += (intTailleCases/element.animation.intDureeAnimation)*element.tabDirection[0];
+        element.fltOffsetY += (intTailleCases/element.animation.intDureeAnimation)*element.tabDirection[1];
+        element.animation.intNbrFrameDepuisDernierAnim ++;
+        element.animation.intNbrFrameDepuisDernierFrame ++;
+        
        console.log(element.fltOffsetX+" " +element.fltOffsetY);
 
       // objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases)
@@ -953,7 +950,7 @@ function mettreAjourGardes(){
             for(i= 0 ; i<intDimention;i++){
                 if (!tabObjGardien[i].booBloquee){
                     var tabDeplacement = trouverDeplacementGarde(i);
-                    if (tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim>=intDureeAnimation){
+                    if (tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim>= tabObjGardien[i].animation.intDureeAnimation){
                     if (tabDeplacement!=null){
                         if (tabDeplacement[0]!=null){
                             //savoir si le gardien doit tomber dans le trou
@@ -974,7 +971,10 @@ function mettreAjourGardes(){
                                     tabObjGardien[i].fltOffsetX = 0;
                                     tabObjGardien[i].fltOffsetY = 0;
                                     tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
+                                    tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim =0 ;
+                                    tabObjGardien[i].animation.intNbrFrameDepuisDernierFrame =0 ;
                                     mettreAjourAnimationGarde()
+
                                     tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
                                     tabObjGardien[i].intPositionY = tabDeplacement[0].intY+1;
                                    // tabObjGardien[i].booBloquee = true;
@@ -1045,6 +1045,7 @@ function construireAnimationSprite(intDureeAnimation,tabCoordonesAnimation,intLa
     objAnimation.intDureeAnimation  = intDureeAnimation;
     objAnimation.fltTempsEntreChangementImg=intDureeAnimation/tabCoordonesAnimation.length;
     objAnimation.intNbrFrameDepuisDernierAnim= 0;
+    objAnimation.intNbrFrameDepuisDernierFrame= 0;
     return objAnimation;
 }
 function mettreAjourAnimationGarde(){
