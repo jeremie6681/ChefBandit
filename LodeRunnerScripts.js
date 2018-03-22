@@ -719,10 +719,12 @@ function dessinePersonnage() {
     tabObjGardien.forEach(element => {
         objC2D.fillStyle = 'purple';
         objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffSetY,intTailleCases,intTailleCases);
-        //element.fltOffSetX += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0];
-        //element.fltOffSetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
+        console.log(((intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0]) + " ok1");
+        console.log(element.fltOffSetX + " ok2");
+        element.fltOffSetX += ((intTailleCases/element.animation.intDureeFrame)*element.tabDirection[0]);
+        element.fltOffSetY += (intTailleCases/element.animation.intDureeFrame)*element.tabDirection[1];
         
-       console.log(element.fltOffsetX+" " +element.fltOffsetY);
+       console.log(element.fltOffSetX+" " +element.fltOffSetY);
       // objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases)
     });
 }
