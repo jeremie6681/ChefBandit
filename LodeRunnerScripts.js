@@ -61,6 +61,8 @@ class Personnage {
         this.booChuteLibre = false;
         this.booBloquee = false;
         this.dateHeureTombeTrou = null;
+        this.intPositionXFiniAnimation = 0;
+        this.intPositionYFiniAnimation = 0;
        // this.booDirection = false; //Pour les animations, Gauche -> True / Droit -> false
 
         //Personnage Joueur
@@ -293,7 +295,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau + 1); intIndex++) {//+2
+    for(var intIndex = 0; intIndex<(objPointage.niveau); intIndex++) {//+2
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -727,8 +729,10 @@ function dessinePersonnage() {
         element.fltOffsetY += (intTailleCases/element.animation.intDureeAnimation)*element.tabDirection[1];
         element.animation.intNbrFrameDepuisDernierAnim ++;
         element.animation.intNbrFrameDepuisDernierFrame ++;
-        
+        console.log("---");
+        console.log(element.intPositionX + " " + element.intPositionY);
        console.log(element.fltOffsetX+" " +element.fltOffsetY);
+       console.log("---");
 
       // objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases)
     });
@@ -859,7 +863,7 @@ function trouverDeplacementGarde(intNoIndexGarde){
             }
         }
     }
-    console.log(Date.now()-tempsDebut+" milisecondes");
+    //console.log(Date.now()-tempsDebut+" milisecondes");
     return solution ;
 }
 //retourne les case dans lesquelles 
@@ -949,44 +953,47 @@ function mettreAjourGardes(){
             var intDimention = tabObjGardien.length;
             for(i= 0 ; i<intDimention;i++){
                 if (!tabObjGardien[i].booBloquee){
+
+                    //Aplique déplacement car animation fini
+                    if ((Math.abs(tabObjGardien[i].fltOffsetX).toFixed(3) == 30.000) || (Math.abs(tabObjGardien[i].fltOffsetY).toFixed(3) == 30.000)) {
+                        tabObjGardien[i].intPositionX = tabObjGardien[i].intPositionXFiniAnimation;
+                        tabObjGardien[i].intPositionY = tabObjGardien[i].intPositionYFiniAnimation;
+                    }
+
                     var tabDeplacement = trouverDeplacementGarde(i);
                     if (tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim>= tabObjGardien[i].animation.intDureeAnimation){
-                    if (tabDeplacement!=null){
-                        if (tabDeplacement[0]!=null){
-                            //savoir si le gardien doit tomber dans le trou
-                            if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
-                                tabObjGardien[i].intPositionY++;
-                                objSons.gardeTombeTrou.play();
-                            }
-                            //colision entre le garde et lode
-                            else if ((tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY)){
-                                objPointage.vies --;
-                                reinitialiseNiveau();
-                                objSons.lodePerdVie.play();
-                            }
-                            // sinon bouge
-                            else {
-                                if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
-                                    
-                                    tabObjGardien[i].fltOffsetX = 0;
-                                    tabObjGardien[i].fltOffsetY = 0;
-                                    tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
-                                    tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim =0 ;
-                                    tabObjGardien[i].animation.intNbrFrameDepuisDernierFrame =0 ;
-                                    mettreAjourAnimationGarde()
-
-                                    tabObjGardien[i].intPositionX = tabDeplacement[0].intX+1;
-                                    tabObjGardien[i].intPositionY = tabDeplacement[0].intY+1;
-                                   // tabObjGardien[i].booBloquee = true;
-                                    
+                        if (tabDeplacement!=null){
+                            if (tabDeplacement[0]!=null){
+                                //savoir si le gardien doit tomber dans le trou
+                                if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
+                                    tabObjGardien[i].intPositionY++;
+                                    objSons.gardeTombeTrou.play();
                                 }
+                                //colision entre le garde et lode
+                                else if ((tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY)){
+                                    objPointage.vies --;
+                                    reinitialiseNiveau();
+                                    objSons.lodePerdVie.play();
+                                }
+                                // sinon bouge
+                                else {
+                                    if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
+                                        tabObjGardien[i].fltOffsetX = 0;
+                                        tabObjGardien[i].fltOffsetY = 0;
+                                        tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
+                                        tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim =0 ;
+                                        tabObjGardien[i].animation.intNbrFrameDepuisDernierFrame =0 ;
 
+                                        mettreAjourAnimationGarde()
+                                        tabObjGardien[i].intPositionXFiniAnimation = tabDeplacement[0].intX+1;
+                                        tabObjGardien[i].intPositionYFiniAnimation = tabDeplacement[0].intY+1;
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-        }
            // tempsDerdiermv = Date.now();
       //  }
     }
