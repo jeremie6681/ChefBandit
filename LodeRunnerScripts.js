@@ -209,32 +209,35 @@ function initAnimation(Canvas){
     dessiner();
     animer();
 }
-//395x219
-function initAnimationsGardes(){
-    objAnimationsGarde = new Object();
-    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,1)
-    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(200,[],395/20,219/6,2)
-    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,3)
-    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,4)
-    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(200,[[19,5]],395/20,219/6,5)
-    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(200,[[1,5]],395/20,219/6,5)
-    objAnimationsGarde.tomberGarde =  construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,7)
-    objAnimationsGarde.immobileGarde= construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,8)
 
-    //tempo juste pour monter et dessendre echelle
+function initAnimationsGardes(){
+
     var objImageAnimEchl1 = new Image();
     objImageAnimEchl1.src = 'sprites/garde/gardeEchelle1.png';
 
     var objImageAnimEchl2 = new Image();
     objImageAnimEchl2.src = 'sprites/garde/gardeEchelle2.png';
 
-    objAnimationsGarde.monterEchelleGarde.tabImageAnimation = new Array();
-    objAnimationsGarde.monterEchelleGarde.tabImageAnimation.push(objImageAnimEchl1);
-    objAnimationsGarde.monterEchelleGarde.tabImageAnimation.push(objImageAnimEchl2);
+    var objImageDefault = new Image();
+    objImageDefault.src = 'sprites/garde/gardeImmobileLarge.png'; //tempo
 
-    objAnimationsGarde.descendreEchelleGarde.tabImageAnimation = new Array();
-    objAnimationsGarde.descendreEchelleGarde.tabImageAnimation.push(objImageAnimEchl1);
-    objAnimationsGarde.descendreEchelleGarde.tabImageAnimation.push(objImageAnimEchl2);
+    //objAnimationsGarde.monterEchelleGarde.tabImageAnimation = new Array();
+  //  objAnimationsGarde.monterEchelleGarde.tabImageAnimation.push(objImageAnimEchl1);
+  //  objAnimationsGarde.monterEchelleGarde.tabImageAnimation.push(objImageAnimEchl2);
+
+   // objAnimationsGarde.descendreEchelleGarde.tabImageAnimation = new Array();
+   // objAnimationsGarde.descendreEchelleGarde.tabImageAnimation.push(objImageAnimEchl1);
+   // objAnimationsGarde.descendreEchelleGarde.tabImageAnimation.push(objImageAnimEchl2);
+
+    objAnimationsGarde = new Object();
+    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(60,objImageDefault)
+    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(60,objImageDefault)
+    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(60,objImageAnimEchl1)
+    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(60,objImageAnimEchl2)
+    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(60,objImageDefault)
+    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(60,objImageDefault)
+    objAnimationsGarde.tomberGarde =  construireAnimationSprite(60,objImageDefault)
+    objAnimationsGarde.immobileGarde= construireAnimationSprite(60,objImageDefault)
 
 }
 
@@ -262,9 +265,6 @@ function initTextures(){
     objImage.src = 'textures/or.png';
     objTextures.or = objImage;
 
-    objImage = new Image();
-    objImage.src = 'sprites/garde/gardeImmobileLarge.png'; //tempo
-    objTextures.garde = objImage;
 }
 
 function initMurs() {
@@ -740,22 +740,8 @@ function dessinePersonnage() {
 
     //Garde
     tabObjGardien.forEach(element => {
-        //console.log(element.intID + " : réel " + element.intPositionX + " : ajout " + element.fltOffsetX + " est dessiner " + element.animation.intNbrFrameDepuisDernierAnim  + " direc " + element.tabDirection[0]);
-        //objC2D.fillStyle = 'purple';
-        //objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
-        element.fltOffsetX += (intTailleCases/element.animation.intDureeAnimation)*element.tabDirection[0];
-        element.fltOffsetY += (intTailleCases/element.animation.intDureeAnimation)*element.tabDirection[1];
-        element.animation.intNbrFrameDepuisDernierAnim++;
-        element.animation.intNbrFrameDepuisDernierFrame++;
-        //console.log(element.intID + " 1: " + element.animation.intNbrFrameDepuisDernierAnim + " 2: "  + element.animation.intNbrFrameDepuisDernierFrame);
-        //trempo pour monter et dessendre echelle
-        if (element.animation.intID == 3 || element.animation.intID == 4) {
-            //console.log(element.intID + " " + (new Date() - objDateHeureDepart));
-
-            objC2D.drawImage(element.animation.tabImageAnimation[0], ((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
-        }
-        else
-            objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
+ 
+            objC2D.drawImage(element.animation.image, ((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
     });
 }
 
@@ -991,6 +977,18 @@ function mettreAjourGardes(){
                                 if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
                                     tabObjGardien[i].intPositionY++;
                                     objSons.gardeTombeTrou.play();
+
+                                    tabObjGardien[i].fltOffsetX = 0;
+                                    tabObjGardien[i].fltOffsetY = 0;
+                                    tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
+                                    tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim =0;
+                                    tabObjGardien[i].animation.intNbrFrameDepuisDernierFrame =0;
+                                    
+                                    mettreAjourAnimationGarde()
+                                    tabObjGardien[i].intPositionXFiniAnimation = tabDeplacement[0].intX+1;
+                                    tabObjGardien[i].intPositionYFiniAnimation = tabDeplacement[0].intY+1;
+                                    tabObjGardien[i].booAnimationEnCour = true;
+
                                 }
                                 //colision entre le garde et lode
                                 else if ((tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY)){
@@ -1001,7 +999,7 @@ function mettreAjourGardes(){
                                 // sinon bouge
                                 else {
                                     if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
-                                        //console.log(tabObjGardien[i].intID + " offx: " + tabObjGardien[i].fltOffsetX +" offy: " +tabObjGardien[i].fltOffsetY+" change animation ++++++++++++++++++++++++++++++++++++++++++++++++");
+                                       
                                         tabObjGardien[i].fltOffsetX = 0;
                                         tabObjGardien[i].fltOffsetY = 0;
                                         tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
@@ -1019,17 +1017,27 @@ function mettreAjourGardes(){
                     }
                 }
             }
-           // tempsDerdiermv = Date.now();
-      //  }
+
+      var intIndex;
+            var intDimentionTableauGarde = tabObjGardien.length;
+            for(intIndex = 0; intIndex < intDimentionTableauGarde;intIndex++) {
+                if (!((Math.abs(tabObjGardien[intIndex].fltOffsetX).toFixed(3) == 30.000) || (Math.abs(tabObjGardien[intIndex].fltOffsetY).toFixed(3) == 30.000))) {
+                 tabObjGardien[intIndex].fltOffsetX += (intTailleCases/tabObjGardien[intIndex].animation.intDureeAnimation)*tabObjGardien[intIndex].tabDirection[0];
+                 tabObjGardien[intIndex].fltOffsetY += (intTailleCases/tabObjGardien[intIndex].animation.intDureeAnimation)*tabObjGardien[intIndex].tabDirection[1];
+             }
+                tabObjGardien[intIndex].animation.intNbrFrameDepuisDernierAnim++;
+                tabObjGardien[intIndex].animation.intNbrFrameDepuisDernierFrame++;
+            }  
     }
 }
 
 //empeche les gardes d'occuper la meme case
 //retourne un boolean qui indique si le mouvement qu'allait effectuer le garde
+//le place sur un autre garde
 function gardeVasMarcherSurAutreGarde(intX,intY){
     var booVasMarcherSurAutreGarde= false;
     tabObjGardien.forEach(function(e){
-        //(e.intPositionXFiniAnimation == intX&&e.intPositionYFiniAnimation == intY)? true:booVasMarcherSurAutreGarde=booVasMarcherSurAutreGarde;
+
         booVasMarcherSurAutreGarde = (e.intPositionXFiniAnimation == intX && e.intPositionYFiniAnimation == intY) ? true: booVasMarcherSurAutreGarde;
     });
     return booVasMarcherSurAutreGarde;
@@ -1052,6 +1060,7 @@ function gameOver(){
 
 
 }
+//fonction appelee lorsque les conditions de victoire sont atteintent
 function gagnerPartie(){
     arreterAnimation();
     console.log('win');
@@ -1065,28 +1074,18 @@ function gagnerPartie(){
     objC2D.textAlign = 'center';
     objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
 }
-function construireAnimationSprite(intDureeAnimation,tabCoordonesAnimation,intLargeurColonne,intHauteurLignes, intId){
+//construit les animations
+function construireAnimationSprite(intDureeAnimation,image, intId){
     var objAnimation = new Object();
 
-    objAnimation.intID = intId;
-
-    objAnimation.tabObjFrame = [];
-    for(var i = 0 ;i<tabCoordonesAnimation.length;i++){
-
-        var objFrame= new Object();
-        objFrame.intX=intLargeurColonne*tabCoordonesAnimation[i][0];
-        objFrame.intY=intHauteurLignes*tabCoordonesAnimation[i][1];
-        objAnimation.tabObjFrame[i]=objFrame;
-    }
+    objAnimation.image = image ;
     objAnimation.intDureeAnimation  = intDureeAnimation;
-    objAnimation.fltTempsEntreChangementImg=intDureeAnimation/tabCoordonesAnimation.length;
-    objAnimation.intNbrFrameDepuisDernierAnim= 200;
+    objAnimation.intNbrFrameDepuisDernierAnim= intDureeAnimation;
     objAnimation.intNbrFrameDepuisDernierFrame= 0;
-
-
 
     return objAnimation;
 }
+//permet de detecter quelle animation le garde devrais effectuer
 function mettreAjourAnimationGarde(){
     
     for(var i = 0 ;i<tabObjGardien.length;i++){
