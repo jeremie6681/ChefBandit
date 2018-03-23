@@ -61,8 +61,7 @@ class Personnage {
         this.booChuteLibre = false;
         this.booBloquee = false;
         this.dateHeureTombeTrou = null;
-        this.intPositionXFiniAnimation = 0;
-        this.intPositionYFiniAnimation = 0;
+        
         this.booAnimationEnCour = false;
        // this.booDirection = false; //Pour les animations, Gauche -> True / Droit -> false
 
@@ -90,6 +89,8 @@ class Personnage {
             
             this.intPositionX = x;
             this.intPositionY = y;
+            this.intPositionXFiniAnimation = x;
+            this.intPositionYFiniAnimation = y;
             this.fltOffsetX= 0;
             this.fltOffsetY= 0;
             this.animation= objAnimationsGarde.immobileGarde;
@@ -1008,7 +1009,8 @@ function mettreAjourGardes(){
 function gardeVasMarcherSurAutreGarde(intX,intY){
     var booVasMarcherSurAutreGarde= false;
     tabObjGardien.forEach(function(e){
-        (e.intPositionX == intX&&e.intPositionY == intY)?booVasMarcherSurAutreGarde = true:booVasMarcherSurAutreGarde=booVasMarcherSurAutreGarde;
+        //(e.intPositionXFiniAnimation == intX&&e.intPositionYFiniAnimation == intY)? true:booVasMarcherSurAutreGarde=booVasMarcherSurAutreGarde;
+        booVasMarcherSurAutreGarde = (e.intPositionXFiniAnimation == intX && e.intPositionYFiniAnimation == intY) ? true: booVasMarcherSurAutreGarde;
     });
     return booVasMarcherSurAutreGarde;
 }
