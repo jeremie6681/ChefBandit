@@ -212,14 +212,30 @@ function initAnimation(Canvas){
 //395x219
 function initAnimationsGardes(){
     objAnimationsGarde = new Object();
-    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(200,[],395/20,219/6)
-    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(200,[[19,5]],395/20,219/6)
-    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(200,[[1,5]],395/20,219/6)
-    objAnimationsGarde.tomberGarde =  construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
-    objAnimationsGarde.immobileGarde= construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6)
+    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,1)
+    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(200,[],395/20,219/6,2)
+    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,3)
+    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,4)
+    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(200,[[19,5]],395/20,219/6,5)
+    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(200,[[1,5]],395/20,219/6,5)
+    objAnimationsGarde.tomberGarde =  construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,7)
+    objAnimationsGarde.immobileGarde= construireAnimationSprite(200,[[14,1],[15,1],[16,1],[17,1]],395/20,219/6,8)
+
+    //tempo juste pour monter et dessendre echelle
+    var objImageAnimEchl1 = new Image();
+    objImageAnimEchl1.src = 'sprites/garde/gardeEchelle1.png';
+
+    var objImageAnimEchl2 = new Image();
+    objImageAnimEchl2.src = 'sprites/garde/gardeEchelle2.png';
+
+    objAnimationsGarde.monterEchelleGarde.tabImageAnimation = new Array();
+    objAnimationsGarde.monterEchelleGarde.tabImageAnimation.push(objImageAnimEchl1);
+    objAnimationsGarde.monterEchelleGarde.tabImageAnimation.push(objImageAnimEchl2);
+
+    objAnimationsGarde.descendreEchelleGarde.tabImageAnimation = new Array();
+    objAnimationsGarde.descendreEchelleGarde.tabImageAnimation.push(objImageAnimEchl1);
+    objAnimationsGarde.descendreEchelleGarde.tabImageAnimation.push(objImageAnimEchl2);
+
 }
 
 function initTextures(){
@@ -247,7 +263,7 @@ function initTextures(){
     objTextures.or = objImage;
 
     objImage = new Image();
-    objImage.src = 'textures/garde.png';
+    objImage.src = 'sprites/garde/gardeImmobileLarge.png'; //tempo
     objTextures.garde = objImage;
 }
 
@@ -650,9 +666,10 @@ function dessiner() {
     
     dessinerTableau(); 
     dessinerMurs();
+    dessinerLingo();
     dessinePersonnage();
     dessinerPointage();
-    dessinerLingo();
+    
     if (objPointage.vies<=0){
         gameOver();
     }
@@ -680,14 +697,10 @@ function dessinerTableau(){
                     objC2D.drawImage(objTextures.bloc, (intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases) 
                     break;
                 case 5:
-                    objC2D.save();
-                    objC2D.fillStyle = "orange";
-                    objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
-                    objC2D.restore();
-                    break;
                 case 6:
                     objC2D.save();
-                    objC2D.fillStyle = "green";
+                    objC2D.fillStyle = "white";
+                    objC2D.globalAlpha = 0.2;
                     objC2D.fillRect((intCasesX*intTailleCases)+30,(intCasesY*intTailleCases)+30,intTailleCases,intTailleCases);
                     objC2D.restore();
                     break;
@@ -728,14 +741,21 @@ function dessinePersonnage() {
     //Garde
     tabObjGardien.forEach(element => {
         //console.log(element.intID + " : réel " + element.intPositionX + " : ajout " + element.fltOffsetX + " est dessiner " + element.animation.intNbrFrameDepuisDernierAnim  + " direc " + element.tabDirection[0]);
-        objC2D.fillStyle = 'purple';
-        objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
+        //objC2D.fillStyle = 'purple';
+        //objC2D.fillRect(((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
         element.fltOffsetX += (intTailleCases/element.animation.intDureeAnimation)*element.tabDirection[0];
         element.fltOffsetY += (intTailleCases/element.animation.intDureeAnimation)*element.tabDirection[1];
         element.animation.intNbrFrameDepuisDernierAnim++;
         element.animation.intNbrFrameDepuisDernierFrame++;
+        //console.log(element.intID + " 1: " + element.animation.intNbrFrameDepuisDernierAnim + " 2: "  + element.animation.intNbrFrameDepuisDernierFrame);
+        //trempo pour monter et dessendre echelle
+        if (element.animation.intID == 3 || element.animation.intID == 4) {
+            //console.log(element.intID + " " + (new Date() - objDateHeureDepart));
 
-      // objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffSetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases)
+            objC2D.drawImage(element.animation.tabImageAnimation[0], ((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
+        }
+        else
+            objC2D.drawImage(objTextures.garde, ((element.intPositionX)*intTailleCases)+element.fltOffsetX,((element.intPositionY)*intTailleCases)+element.fltOffsetY,intTailleCases,intTailleCases);
     });
 }
 
@@ -1045,8 +1065,11 @@ function gagnerPartie(){
     objC2D.textAlign = 'center';
     objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
 }
-function construireAnimationSprite(intDureeAnimation,tabCoordonesAnimation,intLargeurColonne,intHauteurLignes){
+function construireAnimationSprite(intDureeAnimation,tabCoordonesAnimation,intLargeurColonne,intHauteurLignes, intId){
     var objAnimation = new Object();
+
+    objAnimation.intID = intId;
+
     objAnimation.tabObjFrame = [];
     for(var i = 0 ;i<tabCoordonesAnimation.length;i++){
 
@@ -1059,6 +1082,9 @@ function construireAnimationSprite(intDureeAnimation,tabCoordonesAnimation,intLa
     objAnimation.fltTempsEntreChangementImg=intDureeAnimation/tabCoordonesAnimation.length;
     objAnimation.intNbrFrameDepuisDernierAnim= 200;
     objAnimation.intNbrFrameDepuisDernierFrame= 0;
+
+
+
     return objAnimation;
 }
 function mettreAjourAnimationGarde(){
