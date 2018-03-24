@@ -612,8 +612,6 @@ function mettreAJourTrou() {
 }
 
 
-<<<<<<< HEAD
-=======
 function refermeToutLesTrous() {
     tabObjTrou.forEach(element => {
         tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
@@ -675,7 +673,6 @@ function tomberDansTrou(objPersonnage) {
         }
     });
 }
->>>>>>> a620a48f2360ee266fb5273e60559d94dcdd8dba
 
 function mettreAJourLingo() {
     //Joueur
