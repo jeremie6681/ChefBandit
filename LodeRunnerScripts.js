@@ -107,8 +107,6 @@ class Personnage {
         return (tableau[intX - 1][intY] == 1);
     }
 
-
-
     //paramètre true => trou vide / paramètre false => trou plein
     estDansTrou(booEtat) {
         return (tableau[this.intPositionX - 1][this.intPositionY - 1] == (booEtat ? 5 : 6));
@@ -250,29 +248,29 @@ function initAnimationsGardes(){
 
   //load img avec or  
 
-  var objImageAnimEchl1OR = new Image();
-  objImageAnimEchl1OR.src = 'sprites/garde/gardeEchelle1OR.png';
+    var objImageAnimEchl1OR = new Image();
+    objImageAnimEchl1OR.src = 'sprites/garde/gardeEchelle1OR.png';
 
-  var objImageAnimEchl2OR = new Image();
-  objImageAnimEchl2OR.src = 'sprites/garde/gardeEchelle2OR.png';
+    var objImageAnimEchl2OR = new Image();
+    objImageAnimEchl2OR.src = 'sprites/garde/gardeEchelle2OR.png';
 
-  var objImageDefaultOR = new Image();
-  objImageDefaultOR.src = 'sprites/garde/gardeImmobileLargeOR.png'; 
+    var objImageDefaultOR = new Image();
+    objImageDefaultOR.src = 'sprites/garde/gardeImmobileLargeOR.png'; 
   
-  var objImageBarreDroiteOR = new Image();
-  objImageBarreDroiteOR.src = 'sprites/garde/gardeBarreDroiteOR.png'; 
+    var objImageBarreDroiteOR = new Image();
+    objImageBarreDroiteOR.src = 'sprites/garde/gardeBarreDroiteOR.png'; 
 
-  var objImageBarreGaucheOR = new Image();
-  objImageBarreGaucheOR.src = 'sprites/garde/gardeBarreGaucheOR.png';
+    var objImageBarreGaucheOR = new Image();
+    objImageBarreGaucheOR.src = 'sprites/garde/gardeBarreGaucheOR.png';
 
-  var objImageTomberOR = new Image();
-  objImageTomberOR.src = 'sprites/garde/gardeTomberOR.png';
+    var objImageTomberOR = new Image();
+    objImageTomberOR.src = 'sprites/garde/gardeTomberOR.png';
 
-  var objImageCourrirGaucheOR = new Image();
-  objImageCourrirGaucheOR.src = 'sprites/garde/gardeCourrirGauche1OR.png';
+    var objImageCourrirGaucheOR = new Image();
+    objImageCourrirGaucheOR.src = 'sprites/garde/gardeCourrirGauche1OR.png';
 
-  var objImageCourrirDroiteOR = new Image();
-  objImageCourrirDroiteOR.src = 'sprites/garde/gardeCourrirDroite1OR.png';
+    var objImageCourrirDroiteOR = new Image();
+    objImageCourrirDroiteOR.src = 'sprites/garde/gardeCourrirDroite1OR.png';
 
     objAnimationsGarde = new Object();
     objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(60,objImageCourrirDroite)
@@ -284,7 +282,7 @@ function initAnimationsGardes(){
     objAnimationsGarde.tomberGarde =  construireAnimationSprite(60,objImageTomber)
     objAnimationsGarde.immobileGarde= construireAnimationSprite(60,objImageDefault)
 
-//si ont de l'or
+    //si ont de l'or
     objAnimationsGarde.courrirDroiteGardeOR = construireAnimationSprite(60,objImageCourrirDroiteOR)
     objAnimationsGarde.courrirGaucheGardeOR =  construireAnimationSprite(60,objImageCourrirGaucheOR)
     objAnimationsGarde.monterEchelleGardeOR =   construireAnimationSprite(60,objImageAnimEchl1OR)
@@ -507,7 +505,6 @@ function effacerDessin() {
     
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
-  //  var dd = new Date();
     mettreAJourTrou();
     personnageEnChuteLibre();
     mettreAJourPointage();
@@ -515,8 +512,6 @@ function mettreAjourAnimation() {
     mettreAjourGardes();
     mettreAJourLingo();
     mettreAJourNiveau();
-    //console.log(objJoueur.tabDirection)
-   // console.log(Date.now()-dd+" milisecondes (fin de mise a jour)  -----------------------");
 }
 
 function mettreAJourJoueur() {
@@ -526,7 +521,6 @@ function mettreAJourJoueur() {
         objJoueur.booAnimationEnCour = false;
         objJoueur.booBloquee = false; //Peut etre faire d autre validation genre trou ....
     }
-    
     if(objJoueur.booAnimationEnCour) {
         objJoueur.fltOffsetX += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[0];
         objJoueur.fltOffsetY += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[1];
@@ -543,7 +537,6 @@ function mettreAJourPointage() {
         objPointage.tempsNiveauSeconde = ajouteZeros(Math.round((((intMsEcoulees % 3600000) % 60000) / 1000)));
         objPointage.tempsNiveauMinute = ajouteZeros(Math.floor((intMsEcoulees % 3600000) / 60000));
     }
-    
 }
 
 //Vérifie si un trou doit etre refermer
@@ -583,7 +576,6 @@ function mettreAJourTrou() {
                     objPointage.score += 75;
                 }
             }
-
             refermerTrou(element);
         }
         //gardien dans trou mais va sortir
