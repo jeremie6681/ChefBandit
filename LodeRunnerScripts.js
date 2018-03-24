@@ -118,7 +118,6 @@ class Personnage {
     }
 
     estEnChuteLibre() {
-        console.log(this.intPositionX + " x " + this.intPositionY + " Y");
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
         return this.booChuteLibre || (tableau[this.intPositionX - 1][this.intPositionY] == 5) || (tableau[this.intPositionX - 1][this.intPositionY] == 7);
@@ -512,23 +511,25 @@ function mettreAjourAnimation() {
     mettreAJourTrou();
     
     mettreAJourPointage();
+    personnageEnChuteLibre();
     mettreAJourJoueur();
     mettreAjourGardes();
     mettreAJourLingo();
-    personnageEnChuteLibre();
+    
     mettreAJourNiveau();
 }
 
 function mettreAJourJoueur() {
     if ((Math.abs(objJoueur.fltOffsetX).toFixed(3) == 30.000) || (Math.abs(objJoueur.fltOffsetY).toFixed(3) == 30.000)) {
         objJoueur.intPositionX = objJoueur.intPositionXFiniAnimation;
-        objJoueur.intPositionY = objJoueur.intPositionYFiniAnimation;
+        objJoueur.intPositionY = objJoueur.intPositionYFiniAnimation;   
         objJoueur.fltOffsetX = 0;
         objJoueur.fltOffsetY = 0;
         objJoueur.booAnimationEnCour = false;
         objJoueur.booBloquee = false; //Peut etre faire d autre validation genre trou ....
     }
     
+
     if(objJoueur.booAnimationEnCour && (objJoueur.fltOffsetX == 0) && (objJoueur.fltOffsetY == 0)) {
         mettreAjourAnimationLode();
         objJoueur.fltOffsetX += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[0];
@@ -647,7 +648,8 @@ function refermeToutLesTrous() {
 //Chute libre et tomber dans un trou ...
 function personnageEnChuteLibre() {
     //Joueur
-    if (objJoueur.estEnChuteLibre()){
+    if (objJoueur.estEnChuteLibre() && !objJoueur.booAnimationEnCour){
+        objJoueur.booBloquee = true;
         objJoueur.deplacement(0,1);
         objSons.tomber.play();                     
     }
