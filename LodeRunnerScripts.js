@@ -449,7 +449,7 @@ function initSons() {
     objSons.gardeTombeTrou = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonLodePerdVie.wav');
+    objSon.setAttribute('src', 'sons/sonLodePerdVie.mp3');
     objSon.load();
     objSons.lodePerdVie = objSon;
 
@@ -611,33 +611,6 @@ function mettreAJourTrou() {
     });
 }
 
-//gauche -> true / droite -> false
-function creuser(booDirection) {
-    //vérifie que le trou n'existe pas déjà
-    var objNouveauTrou = new trou(objJoueur.intPositionX + (booDirection ? -1 : 1),objJoueur.intPositionY + 1);
-
-    var objTrouExiste = tabObjTrou.find(function(element) {
-        return ((objNouveauTrou.intPositionX == element.intPositionX) && (objNouveauTrou.intPositionY == element.intPositionY));
-    });
-
-    //creuse
-    if (objTrouExiste == null) {
-        tabObjTrou.push(objNouveauTrou);
-      
-        if (!objSons.creuser.ended){
-        objSons.creuser.pause();
-        objSons.creuser.currentTime = 0;
-        }
-        objSons.creuser.play();
-    }    
-}
-
-//Referme un trou
-function refermerTrou(objTrou) {
-    tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
-    tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
-    objSons.remplirBloc.play();
-}
 
 function refermeToutLesTrous() {
     tabObjTrou.forEach(element => {
@@ -740,35 +713,180 @@ function mettreAJourNiveau() {
     }
 }
 
-//True -> ajoute échelle | false -> retire échelle
-function echelleSortie(booAjoutRetire) {
-    var i;
-    for (i =0; i< 4;i++) {
-        tableau[18][i] = (booAjoutRetire ? 3 : 0);
+function mettreAjourGardes(){
+ 
+    if (objDateHeureDepart != null){
+        //pour meilleur performance du programme
+            var i;
+            var intDimention = tabObjGardien.length;
+            for(i= 0 ; i<intDimention;i++){
+                if (!tabObjGardien[i].booBloquee){
+                    //Aplique déplacement car animation fini
+                    if ((Math.abs(tabObjGardien[i].fltOffsetX).toFixed(3) == 30.000) || (Math.abs(tabObjGardien[i].fltOffsetY).toFixed(3) == 30.000)) {
+                        tabObjGardien[i].intPositionX = tabObjGardien[i].intPositionXFiniAnimation;
+                        tabObjGardien[i].intPositionY = tabObjGardien[i].intPositionYFiniAnimation;
+                        tabObjGardien[i].booAnimationEnCour = false;
+                    }
+
+                    var tabDeplacement = trouverDeplacementGarde(i);
+                    if(!tabObjGardien[i].booAnimationEnCour) {
+                        if (tabDeplacement!=null){
+                            if (tabDeplacement[0]!=null){
+                                //savoir si le gardien doit tomber dans le trou
+                                if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
+                                    tabObjGardien[i]
+                                    tabObjGardien[i].intPositionY++;
+                                    tabObjGardien[i].fltOffsetX = 0;
+                                    tabObjGardien[i].fltOffsetY = 0;
+                                    tabObjGardien[i].tabDirection = [0,0];
+                                    objSons.gardeTombeTrou.play();
+                                    tabObjGardien[i].booBloquee = true;
+                                    tabObjGardien[i].intPositionXFiniAnimation =tabObjGardien[i].intPositionX;
+                                    tabObjGardien[i].intPositionYFiniAnimation =tabObjGardien[i].intPositionY;
+                                }
+                                //colision entre le garde et lode
+                                else if ((tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY)){
+                                    objPointage.vies --;
+                                    reinitialiseNiveau();
+                                    objSons.lodePerdVie.play();
+                                }
+                                // sinon bouge
+                                else {
+                                    if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
+                                       
+                                        tabObjGardien[i].fltOffsetX = 0;
+                                        tabObjGardien[i].fltOffsetY = 0;
+                                        tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
+                                        tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim =0;
+                                        tabObjGardien[i].animation.intNbrFrameDepuisDernierFrame =0;
+                                        
+                                        mettreAjourAnimationGarde()
+                                        tabObjGardien[i].intPositionXFiniAnimation = tabDeplacement[0].intX+1;
+                                        tabObjGardien[i].intPositionYFiniAnimation = tabDeplacement[0].intY+1;
+                                        tabObjGardien[i].booAnimationEnCour = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    //mettre à jour les donées nescesaires aux animations
+      var intIndex;
+            var intDimentionTableauGarde = tabObjGardien.length;
+            for(intIndex = 0; intIndex < intDimentionTableauGarde;intIndex++) {
+                if (!((Math.abs(tabObjGardien[intIndex].fltOffsetX).toFixed(3) == 30.000) || (Math.abs(tabObjGardien[intIndex].fltOffsetY).toFixed(3) == 30.000))) {
+                 tabObjGardien[intIndex].fltOffsetX += (intTailleCases/tabObjGardien[intIndex].animation.intDureeAnimation)*tabObjGardien[intIndex].tabDirection[0];
+                 tabObjGardien[intIndex].fltOffsetY += (intTailleCases/tabObjGardien[intIndex].animation.intDureeAnimation)*tabObjGardien[intIndex].tabDirection[1];
+             }
+                tabObjGardien[intIndex].animation.intNbrFrameDepuisDernierAnim++;
+                tabObjGardien[intIndex].animation.intNbrFrameDepuisDernierFrame++;
+            }  
     }
 }
-//remet le niveau à son état initial, 
-//à utiliser quand lode meurt
-function reinitialiseNiveau() {
-    objDateHeureDepart = null;
-    initPersonnage();
-    initLingo();
-    echelleSortie(false);
-    refermeToutLesTrous();
-    initTrou();
 
-    objPointage.tempsNiveauSeconde = ajouteZeros(0);
-    objPointage.tempsNiveauMinute = ajouteZeros(0);
+//permet de detecter quelle animation le garde devrais effectuer
+function mettreAjourAnimationGarde(){
+    
+    for(var i = 0 ;i<tabObjGardien.length;i++){
+        //afficher le gardiern différament si il a de l'or
+       if (tabObjGardien[i].intNbLingoOr>0){
+         if (tabObjGardien[i].tabDirection[1]==-1){
+                tabObjGardien[i].animation=objAnimationsGarde.monterEchelleGardeOR
+            }
+            else if (tabObjGardien[i].tabDirection[1]==1){
+                if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==3){
+                  tabObjGardien[i].animation=objAnimationsGarde.descendreEchelleGardeOR
+                }
+                else{
+                    tabObjGardien[i].animation=objAnimationsGarde.tomberGardeOR
+                }
+            }
+            else if (tabObjGardien[i].tabDirection[0] ==-1){
+                if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
+                    tabObjGardien[i].animation=objAnimationsGarde.barreGaucheGardeOR
+                }
+                else{
+                    tabObjGardien[i].animation=objAnimationsGarde.courrirGaucheGardeOR
+                }
+            }
+            else if (tabObjGardien[i].tabDirection[0]==1){
+                if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
+                    tabObjGardien[i].animation=objAnimationsGarde.barreDroiteGardeOR
+                }
+                else{
+                    tabObjGardien[i].animation=objAnimationsGarde.courrirDroiteGardeOR
+                }   
+            }
+            else {
+                tabObjGardien[i].animation=objAnimationsGarde.immobileGardeOR
+            }
+    }
+    //gardes sans or 
+    else {
+        if (tabObjGardien[i].tabDirection[1]==-1){
+            tabObjGardien[i].animation=objAnimationsGarde.monterEchelleGarde
+        }
+        else if (tabObjGardien[i].tabDirection[1]==1){
+            if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==3){
+                tabObjGardien[i].animation=objAnimationsGarde.descendreEchelleGarde
+            }
+            else{
+                tabObjGardien[i].animation=objAnimationsGarde.tomberGarde
+            }
+        }
+        else if (tabObjGardien[i].tabDirection[0] ==-1){
+            if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
+                tabObjGardien[i].animation=objAnimationsGarde.barreGaucheGarde
+            }
+            else{
+                tabObjGardien[i].animation=objAnimationsGarde.courrirGaucheGarde
+            }
+        }
+        else if (tabObjGardien[i].tabDirection[0]==1){
+            if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
+                tabObjGardien[i].animation=objAnimationsGarde.barreDroiteGarde
+            }
+            else{
+                tabObjGardien[i].animation=objAnimationsGarde.courrirDroiteGarde
+            }
+        }
+        else {
+            tabObjGardien[i].animation=objAnimationsGarde.immobileGarde
+        }
+    }
 }
-
-//Ajoute ou enlève un lingo
-//booAction = True -> ajout | false -> enlève
-function gestionStockLingo(booAction, intPositionX, intPositionY) {
-    if (booAction) {
-        tabObjLingo.push(new lingo(intPositionX,intPositionY));
+}
+function mettreAjourAnimationLode(){
+    if (objJoueur.tabDirection[1]==-1){
+        objJoueur.animation=objAnimationsLode.echelleLode
+    }
+    else if (objJoueur.tabDirection[1]==1){
+        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==3){
+            objJoueur.animation=objAnimationsLode.echelleLode
+        }
+        else{
+            objJoueur.animation=objAnimationsLode.tomberLode
+        }
+    }
+    else if (objJoueur.tabDirection[0] ==-1){
+        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==2){
+            objJoueur.animation=objAnimationsLode.barreGaucheLode
+        }
+        else{
+            objJoueur.animation=objAnimationsLode.courrirGaucheLode
+        }
+    }
+    else if (objJoueur.tabDirection[0]==1){
+        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==2){
+            objJoueur.animation=objAnimationsLode.barreDroiteLode
+        }
+        else{
+            objJoueur.animation=objAnimationsLode.courrirDroiteLode
+        }
     }
     else {
-        tabObjLingo.splice(tabObjLingo.findIndex(element => ((element.intPositionX == intPositionX) && (element.intPositionY == intPositionY))),1);
+            objJoueur.animation=objAnimationsLode.immobileLode
     }
 }
 
@@ -874,6 +992,157 @@ function dessinerLingo() {
         objC2D.drawImage(objTextures.or, ((element.intPositionX)*intTailleCases),((element.intPositionY)*intTailleCases),intTailleCases,intTailleCases)});
 }
 
+
+
+
+//gauche -> true / droite -> false
+function creuser(booDirection) {
+    //vérifie que le trou n'existe pas déjà
+    var objNouveauTrou = new trou(objJoueur.intPositionX + (booDirection ? -1 : 1),objJoueur.intPositionY + 1);
+
+    var objTrouExiste = tabObjTrou.find(function(element) {
+        return ((objNouveauTrou.intPositionX == element.intPositionX) && (objNouveauTrou.intPositionY == element.intPositionY));
+    });
+
+    //creuse
+    if (objTrouExiste == null) {
+        tabObjTrou.push(objNouveauTrou);
+      
+        if (!objSons.creuser.ended){
+        objSons.creuser.pause();
+        objSons.creuser.currentTime = 0;
+        }
+        objSons.creuser.play();
+    }    
+}
+
+//Referme un trou
+function refermerTrou(objTrou) {
+    tabObjTrou.splice(tabObjTrou.indexOf(objTrou),1);
+    tableau[objTrou.intPositionX - 1][objTrou.intPositionY - 1] = 1;
+    objSons.remplirBloc.play();
+}
+
+function refermeToutLesTrous() {
+    tabObjTrou.forEach(element => {
+        tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
+    });
+}
+
+//Chute libre et tomber dans un trou ...
+function personnageEnChuteLibre() {
+    //Joueur
+    if (objJoueur.estEnChuteLibre()){
+        objJoueur.deplacement(0,1);
+        objSons.tomber.play();                     
+    }
+    else if (objJoueur.estDansTrou(true))
+        tomberDansTrou(objJoueur);
+    else{
+        objSons.tomber.pause();
+        objSons.tomber.currentTime = 0;
+    }
+
+    tabObjGardien.forEach(objGardien => {
+        
+        if (objGardien.estDansTrou(true)) {
+            tomberDansTrou(objGardien);
+        }
+        else if (objGardien.estDansTrou(false)) {
+            objGardien.booBloquee = true;
+        }
+    });
+}
+
+//Vérifie si la position est occupé par un autre personnage
+function emplacementSansPersonnage(intX,intY) {
+    var intIndexGardeSiPresent = tabObjGardien.findIndex(element => ((element.intPositionX == intX) && (element.intPositionY == intY)));
+
+    return (!((objJoueur.intPositionX == intX) && (objJoueur.intPositionY == intY)) && (intIndexGardeSiPresent == -1));
+}
+
+function tomberDansTrou(objPersonnage) {
+
+    tabObjTrou.forEach(element => {
+        if ((objPersonnage.intPositionX == element.intPositionX) && (objPersonnage.intPositionY == element.intPositionY)) {
+            objPersonnage.dateHeureTombeTrou = new Date();
+            element.objPersonnageTrou = objPersonnage;
+            tableau[element.intPositionX - 1][element.intPositionY - 1] = 6;
+
+            if (objPersonnage.intID != 20)
+                objPointage.score += 75;
+            else {
+                objPersonnage.booBloquee = true;
+            }
+
+            //Perte lingo si tombe dans vide
+            if (objPersonnage.intNbLingoOr > 0 && objPersonnage.intID != 20) {
+                objPersonnage.intNbLingoOr--;
+                gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
+            }
+        }
+    });
+}
+
+//empeche les gardes d'occuper la meme case
+//retourne un boolean qui indique si le mouvement qu'allait effectuer le garde
+//le place sur un autre garde
+function gardeVasMarcherSurAutreGarde(intX,intY){
+    var booVasMarcherSurAutreGarde= false;
+    tabObjGardien.forEach(function(e){
+
+        booVasMarcherSurAutreGarde = (e.intPositionXFiniAnimation == intX && e.intPositionYFiniAnimation == intY) ? true: booVasMarcherSurAutreGarde;
+    });
+    return booVasMarcherSurAutreGarde;
+}
+
+//affiche un écrand 'game over'
+function gameOver(){
+    objSons.lodePerdVie.pause();
+    arreterAnimation();
+    console.log('game over');
+    effacerDessin();
+    objC2D.fillStyle='black'
+    objC2D.fillRect(0,0,objCanvas.width,objCanvas.height)
+    var strTexte ='game over';
+    objC2D.fillStyle = 'red';
+    objC2D.font = '80px Arial';
+    objC2D.textBaseLine = 'middle';
+    objC2D.textAlign = 'center';
+    objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
+    objSons.perdreToutesVies.play();
+    
+
+
+}
+
+//fonction appelee lorsque les conditions de victoire sont atteintent
+function gagnerPartie(){
+    arreterAnimation();
+    console.log('win');
+    effacerDessin();
+    objC2D.fillStyle='white'
+    objC2D.fillRect(0,0,objCanvas.width,objCanvas.height)
+    var strTexte ='vous avez passer tous les niveaux avec un score de '+objPointage.score;
+    objC2D.fillStyle = 'blue';
+    objC2D.font = '80px Arial';
+    objC2D.textBaseLine = 'middle';
+    objC2D.textAlign = 'center';
+    objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
+}
+
+//construit les animations
+function construireAnimationSprite(intDureeAnimation,image, intId){
+    var objAnimation = new Object();
+
+    objAnimation.image = image ;
+    objAnimation.intDureeAnimation  = intDureeAnimation;
+    objAnimation.intNbrFrameDepuisDernierAnim= intDureeAnimation;
+    objAnimation.intNbrFrameDepuisDernierFrame= 0;
+
+    return objAnimation;
+}
+
 function gereDeplacementJoueur(keyCode) {
     switch(keyCode) {
         case 37: // Flèche-à-gauche
@@ -915,6 +1184,7 @@ function gereDeplacementJoueur(keyCode) {
 function ajouteZeros(intValeur) {
     return (intValeur < 10 ? '0' : '') + intValeur;
 }
+
 //utilise l'algorithme A* pour le pathfinding des gardes
 //retourne null si aucun chemin est trouvé ou un array contenant
 // le chemin le plus court entre le garde et lode 
@@ -986,6 +1256,7 @@ function trouverDeplacementGarde(intNoIndexGarde){
    // console.log(Date.now()-tempsDebut+" milisecondes");
     return solution ;
 }
+
 //retourne les case dans lesquelles 
 //il est possible de faire un mouvement 
 //qui sont autour de la case reçue
@@ -1050,6 +1321,7 @@ function trouverVoisins(nodeActuelle){
     }
     return tabVoisins;
 }
+
 //retourne true si le voisin à déja été visité
 function voisinDejaVisite(closeSet,voisin){
     var booDejaVisite = false ;
@@ -1058,241 +1330,43 @@ function voisinDejaVisite(closeSet,voisin){
     });
     return booDejaVisite;
 }
+
 //retoure un aproximation de la distance entre une node et le but
 //ici une formule de distance entre 2 points est utilisée 
 function calculerHeuristique(voisin,but){
     return (Math.abs(but.intX-voisin.intX)+Math.abs(but.intY-voisin.intY))
 }
 
-function mettreAjourGardes(){
- 
-    if (objDateHeureDepart != null){
-        //pour meilleur performance du programme
-            var i;
-            var intDimention = tabObjGardien.length;
-            for(i= 0 ; i<intDimention;i++){
-                if (!tabObjGardien[i].booBloquee){
-                    //Aplique déplacement car animation fini
-                    if ((Math.abs(tabObjGardien[i].fltOffsetX).toFixed(3) == 30.000) || (Math.abs(tabObjGardien[i].fltOffsetY).toFixed(3) == 30.000)) {
-                        tabObjGardien[i].intPositionX = tabObjGardien[i].intPositionXFiniAnimation;
-                        tabObjGardien[i].intPositionY = tabObjGardien[i].intPositionYFiniAnimation;
-                        tabObjGardien[i].booAnimationEnCour = false;
-                    }
-
-                    var tabDeplacement = trouverDeplacementGarde(i);
-                    if(!tabObjGardien[i].booAnimationEnCour) {
-                        if (tabDeplacement!=null){
-                            if (tabDeplacement[0]!=null){
-                                //savoir si le gardien doit tomber dans le trou
-                                if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
-                                    tabObjGardien[i]
-                                    tabObjGardien[i].intPositionY++;
-                                    tabObjGardien[i].fltOffsetX = 0;
-                                    tabObjGardien[i].fltOffsetY = 0;
-                                    tabObjGardien[i].tabDirection = [0,0];
-                                    objSons.gardeTombeTrou.play();
-                                    tabObjGardien[i].booBloquee = true;
-                                    tabObjGardien[i].intPositionXFiniAnimation =tabObjGardien[i].intPositionX;
-                                    tabObjGardien[i].intPositionYFiniAnimation =tabObjGardien[i].intPositionY;
-                                }
-                                //colision entre le garde et lode
-                                else if ((tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY)){
-                                    objPointage.vies --;
-                                    reinitialiseNiveau();
-                                    objSons.lodePerdVie.play();
-                                }
-                                // sinon bouge
-                                else {
-                                    if (!gardeVasMarcherSurAutreGarde(tabDeplacement[0].intX+1,tabDeplacement[0].intY+1)){
-                                       
-                                        tabObjGardien[i].fltOffsetX = 0;
-                                        tabObjGardien[i].fltOffsetY = 0;
-                                        tabObjGardien[i].tabDirection = [((tabDeplacement[0].intX+1)-tabObjGardien[i].intPositionX),((tabDeplacement[0].intY+1)-tabObjGardien[i].intPositionY)]
-                                        tabObjGardien[i].animation.intNbrFrameDepuisDernierAnim =0;
-                                        tabObjGardien[i].animation.intNbrFrameDepuisDernierFrame =0;
-                                        
-                                        mettreAjourAnimationGarde()
-                                        tabObjGardien[i].intPositionXFiniAnimation = tabDeplacement[0].intX+1;
-                                        tabObjGardien[i].intPositionYFiniAnimation = tabDeplacement[0].intY+1;
-                                        tabObjGardien[i].booAnimationEnCour = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-    //mettre à jour les donées nescesaires aux animations
-      var intIndex;
-            var intDimentionTableauGarde = tabObjGardien.length;
-            for(intIndex = 0; intIndex < intDimentionTableauGarde;intIndex++) {
-                if (!((Math.abs(tabObjGardien[intIndex].fltOffsetX).toFixed(3) == 30.000) || (Math.abs(tabObjGardien[intIndex].fltOffsetY).toFixed(3) == 30.000))) {
-                 tabObjGardien[intIndex].fltOffsetX += (intTailleCases/tabObjGardien[intIndex].animation.intDureeAnimation)*tabObjGardien[intIndex].tabDirection[0];
-                 tabObjGardien[intIndex].fltOffsetY += (intTailleCases/tabObjGardien[intIndex].animation.intDureeAnimation)*tabObjGardien[intIndex].tabDirection[1];
-             }
-                tabObjGardien[intIndex].animation.intNbrFrameDepuisDernierAnim++;
-                tabObjGardien[intIndex].animation.intNbrFrameDepuisDernierFrame++;
-            }  
+//True -> ajoute échelle | false -> retire échelle
+function echelleSortie(booAjoutRetire) {
+    var i;
+    for (i =0; i< 4;i++) {
+        tableau[18][i] = (booAjoutRetire ? 3 : 0);
     }
 }
 
-//empeche les gardes d'occuper la meme case
-//retourne un boolean qui indique si le mouvement qu'allait effectuer le garde
-//le place sur un autre garde
-function gardeVasMarcherSurAutreGarde(intX,intY){
-    var booVasMarcherSurAutreGarde= false;
-    tabObjGardien.forEach(function(e){
+//remet le niveau à son état initial, 
+//à utiliser quand lode meurt
+function reinitialiseNiveau() {
+    objDateHeureDepart = null;
+    initPersonnage();
+    initLingo();
+    echelleSortie(false);
+    refermeToutLesTrous();
+    initTrou();
 
-        booVasMarcherSurAutreGarde = (e.intPositionXFiniAnimation == intX && e.intPositionYFiniAnimation == intY) ? true: booVasMarcherSurAutreGarde;
-    });
-    return booVasMarcherSurAutreGarde;
+    objPointage.tempsNiveauSeconde = ajouteZeros(0);
+    objPointage.tempsNiveauMinute = ajouteZeros(0);
 }
-//affiche un écrand 'game over'
-function gameOver(){
-    objSons.lodePerdVie.pause();
-    arreterAnimation();
-    console.log('game over');
-    effacerDessin();
-    objC2D.fillStyle='black'
-    objC2D.fillRect(0,0,objCanvas.width,objCanvas.height)
-    var strTexte ='game over';
-    objC2D.fillStyle = 'red';
-    objC2D.font = '80px Arial';
-    objC2D.textBaseLine = 'middle';
-    objC2D.textAlign = 'center';
-    objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
-    objSons.perdreToutesVies.play();
-    
 
-
-}
-//fonction appelee lorsque les conditions de victoire sont atteintent
-function gagnerPartie(){
-    arreterAnimation();
-    console.log('win');
-    effacerDessin();
-    objC2D.fillStyle='white'
-    objC2D.fillRect(0,0,objCanvas.width,objCanvas.height)
-    var strTexte ='vous avez passer tous les niveaux avec un score de '+objPointage.score;
-    objC2D.fillStyle = 'blue';
-    objC2D.font = '80px Arial';
-    objC2D.textBaseLine = 'middle';
-    objC2D.textAlign = 'center';
-    objC2D.fillText(strTexte,objCanvas.width/2,objCanvas.height/2);
-}
-//construit les animations
-function construireAnimationSprite(intDureeAnimation,image, intId){
-    var objAnimation = new Object();
-
-    objAnimation.image = image ;
-    objAnimation.intDureeAnimation  = intDureeAnimation;
-    objAnimation.intNbrFrameDepuisDernierAnim= intDureeAnimation;
-    objAnimation.intNbrFrameDepuisDernierFrame= 0;
-
-    return objAnimation;
-}
-//permet de detecter quelle animation le garde devrais effectuer
-function mettreAjourAnimationGarde(){
-    
-    for(var i = 0 ;i<tabObjGardien.length;i++){
-        //afficher le gardiern différament si il a de l'or
-       if (tabObjGardien[i].intNbLingoOr>0){
-         if (tabObjGardien[i].tabDirection[1]==-1){
-                tabObjGardien[i].animation=objAnimationsGarde.monterEchelleGardeOR
-            }
-            else if (tabObjGardien[i].tabDirection[1]==1){
-                if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==3){
-                  tabObjGardien[i].animation=objAnimationsGarde.descendreEchelleGardeOR
-                }
-                else{
-                    tabObjGardien[i].animation=objAnimationsGarde.tomberGardeOR
-                }
-            }
-            else if (tabObjGardien[i].tabDirection[0] ==-1){
-                if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
-                    tabObjGardien[i].animation=objAnimationsGarde.barreGaucheGardeOR
-                }
-                else{
-                    tabObjGardien[i].animation=objAnimationsGarde.courrirGaucheGardeOR
-                }
-            }
-            else if (tabObjGardien[i].tabDirection[0]==1){
-                if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
-                    tabObjGardien[i].animation=objAnimationsGarde.barreDroiteGardeOR
-                }
-                else{
-                    tabObjGardien[i].animation=objAnimationsGarde.courrirDroiteGardeOR
-                }   
-            }
-            else {
-                tabObjGardien[i].animation=objAnimationsGarde.immobileGardeOR
-            }
-    }
-    //gardes sans or 
-    else {
-        if (tabObjGardien[i].tabDirection[1]==-1){
-            tabObjGardien[i].animation=objAnimationsGarde.monterEchelleGarde
-        }
-        else if (tabObjGardien[i].tabDirection[1]==1){
-            if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==3){
-                tabObjGardien[i].animation=objAnimationsGarde.descendreEchelleGarde
-            }
-            else{
-                tabObjGardien[i].animation=objAnimationsGarde.tomberGarde
-            }
-        }
-        else if (tabObjGardien[i].tabDirection[0] ==-1){
-            if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
-                tabObjGardien[i].animation=objAnimationsGarde.barreGaucheGarde
-            }
-            else{
-                tabObjGardien[i].animation=objAnimationsGarde.courrirGaucheGarde
-            }
-        }
-        else if (tabObjGardien[i].tabDirection[0]==1){
-            if(tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY-1]==2){
-                tabObjGardien[i].animation=objAnimationsGarde.barreDroiteGarde
-            }
-            else{
-                tabObjGardien[i].animation=objAnimationsGarde.courrirDroiteGarde
-            }
-        }
-        else {
-            tabObjGardien[i].animation=objAnimationsGarde.immobileGarde
-        }
-    }
-}
-}
-function mettreAjourAnimationLode(){
-    if (objJoueur.tabDirection[1]==-1){
-        objJoueur.animation=objAnimationsLode.echelleLode
-    }
-    else if (objJoueur.tabDirection[1]==1){
-        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==3){
-            objJoueur.animation=objAnimationsLode.echelleLode
-        }
-        else{
-            objJoueur.animation=objAnimationsLode.tomberLode
-        }
-    }
-    else if (objJoueur.tabDirection[0] ==-1){
-        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==2){
-            objJoueur.animation=objAnimationsLode.barreGaucheLode
-        }
-        else{
-            objJoueur.animation=objAnimationsLode.courrirGaucheLode
-        }
-    }
-    else if (objJoueur.tabDirection[0]==1){
-        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==2){
-            objJoueur.animation=objAnimationsLode.barreDroiteLode
-        }
-        else{
-            objJoueur.animation=objAnimationsLode.courrirDroiteLode
-        }
+//Ajoute ou enlève un lingo
+//booAction = True -> ajout | false -> enlève
+function gestionStockLingo(booAction, intPositionX, intPositionY) {
+    if (booAction) {
+        tabObjLingo.push(new lingo(intPositionX,intPositionY));
     }
     else {
-            objJoueur.animation=objAnimationsLode.immobileLode
+        tabObjLingo.splice(tabObjLingo.findIndex(element => ((element.intPositionX == intPositionX) && (element.intPositionY == intPositionY))),1);
     }
 }
 
