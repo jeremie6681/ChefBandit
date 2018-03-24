@@ -62,7 +62,7 @@ class Personnage {
         this.booChuteLibre = false;
         this.booBloquee = false;
         this.dateHeureTombeTrou = null;
-        this.tabDirection =[0,0];
+        this.tabDirection =[-1,0];
         this.booAnimationEnCour = false;
         this.intPositionXFiniAnimation = x;
         this.intPositionYFiniAnimation = y;
@@ -75,7 +75,7 @@ class Personnage {
             this.intID = 20;
             this.intPositionX = 14;
             this.intPositionY = 15;
-            this.couleur = 'white';
+           // this.couleur = 'white';
             this.animation= objAnimationsLode.immobileLode;
         }
         //Personnage Gardien
@@ -149,7 +149,7 @@ class Personnage {
             this.deplacement(intFuturX,intFuturY);
             
         }
-        if (this.booChuteLibre){
+        else if (this.booChuteLibre){
             this.tabDirection=[0,1]
         }
 
@@ -159,7 +159,12 @@ class Personnage {
     deplacement(intFuturX,intFuturY) {
         this.intPositionXFiniAnimation += intFuturX;
         this.intPositionYFiniAnimation += intFuturY;
-        this.tabDirection[intFuturX,intFuturY]
+        
+        //permet de mettre a jour la direction dans laquelle lode se deplace 
+        if (intFuturX!=0||intFuturY!=0){
+        this.tabDirection=[intFuturX,intFuturY]
+        console.log(intFuturX+'     '+intFuturY);
+        }
     }
 
     //true -> gauche / false -> droite
@@ -509,7 +514,7 @@ function mettreAjourAnimation() {
     mettreAjourGardes();
     mettreAJourLingo();
     mettreAJourNiveau();
-    console.log(objJoueur.tabDirection)
+    //console.log(objJoueur.tabDirection)
    // console.log(Date.now()-dd+" milisecondes (fin de mise a jour)  -----------------------");
 }
 
@@ -972,7 +977,7 @@ function trouverDeplacementGarde(intNoIndexGarde){
             }
         }
     }
-    console.log(Date.now()-tempsDebut+" milisecondes");
+   // console.log(Date.now()-tempsDebut+" milisecondes");
     return solution ;
 }
 //retourne les case dans lesquelles 
