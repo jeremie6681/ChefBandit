@@ -449,7 +449,7 @@ function initSons() {
     objSons.gardeTombeTrou = objSon;
 
     objSon = document.createElement('audio');
-    objSon.setAttribute('src', 'sons/sonLodePerdVie.mp3');
+    objSon.setAttribute('src', 'sons/sonLodePerdVie.wav');
     objSon.load();
     objSons.lodePerdVie = objSon;
 
@@ -509,7 +509,6 @@ function effacerDessin() {
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
     mettreAJourTrou();
-    
     mettreAJourPointage();
     personnageEnChuteLibre();
     mettreAJourJoueur();
@@ -1032,7 +1031,7 @@ function refermeToutLesTrous() {
 //Chute libre et tomber dans un trou ...
 function personnageEnChuteLibre() {
     //Joueur
-    if (objJoueur.estEnChuteLibre()){
+    if (objJoueur.estEnChuteLibre() && !objJoueur.booAnimationEnCour){
         objJoueur.deplacement(0,1);
         objSons.tomber.play();                     
     }
