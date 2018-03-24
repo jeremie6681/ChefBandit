@@ -9,7 +9,8 @@ var objSons = null;
 var objTextures= null;
 var objPointage = null;
 var objCycleAnimation = null;
-
+var ObjAnimationsGarde= null;
+var ObjAnimationsLode = null;
 var objDateHeureDepart = null;
 var tempsDerdiermv = 0;
 
@@ -22,7 +23,7 @@ var tabObjTrou = null;
 var tabGrilleAi = null;
 var tabObjGardien = null;
 var tabObjLingo = null;
-var ObjAnimationsGarde= null;
+
 var tableau =[
     [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
     [0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,4],
@@ -282,6 +283,43 @@ function initAnimationsGardes(){
     objAnimationsGarde.tomberGardeOR =  construireAnimationSprite(60,objImageTomberOR)
     objAnimationsGarde.immobileGardeOR= construireAnimationSprite(60,objImageDefaultOR)
 
+}
+function initAnimationsLode(){
+
+
+    var objImageAnimEchl1 = new Image();
+    objImageAnimEchl1.src = 'sprites/lode/lodeEchelle.png';
+
+
+
+    var objImageDefault = new Image();
+    objImageDefault.src = 'sprites/lode/lodeImmobile.png'; 
+    
+    var objImageBarreDroite = new Image();
+    objImageBarreDroite.src = 'sprites/lode/lodeBarreDroite.png'; 
+
+    var objImageBarreGauche = new Image();
+    objImageBarreGauche.src = 'sprites/lode/lodeBarreGauche.png';
+
+    var objImageTomber = new Image();
+    objImageTomber.src = 'sprites/lode/lodeTomber.png';
+
+    var objImageCourrirGauche = new Image();
+    objImageCourrirGauche.src = 'sprites/lode/lodeCourrirGauche.png';
+
+    var objImageCourrirDroite = new Image();
+    objImageCourrirDroite.src = 'sprites/lode/lodeCourrirDroite.png';
+
+
+    objAnimationsLode = new Object();
+    objAnimationsLode.courrirDroiteGarde = construireAnimationSprite(60,objImageCourrirDroite)
+    objAnimationsLode.courrirGaucheGarde =  construireAnimationSprite(60,objImageCourrirGauche)
+    objAnimationsLode.monterEchelleGarde =   construireAnimationSprite(60,objImageAnimEchl1)
+    objAnimationsLode.descendreEchelleGarde =    construireAnimationSprite(60,objImageAnimEchl1)
+    objAnimationsLode.barreDroiteGarde = construireAnimationSprite(60,objImageBarreDroite)
+    objAnimationsLode.barreGaucheGarde=  construireAnimationSprite(60,objImageBarreGauche)
+    objAnimationsLode.tomberGarde =  construireAnimationSprite(60,objImageTomber)
+    objAnimationsLode.immobileGarde= construireAnimationSprite(60,objImageDefault)
 }
 
 function initTextures(){
