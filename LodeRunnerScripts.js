@@ -849,7 +849,7 @@ function dessinePersonnage() {
     //Joueur
     //objC2D.fillStyle='white';
     //objC2D.fillRect(((objJoueur.intPositionX - 1)*intTailleCases)+30,((objJoueur.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
-    objC2D.drawImage(objJoueur.animation.image, ((objJoueur.intPositionX)*intTailleCases),((objJoueur.intPositionY)*intTailleCases),intTailleCases,intTailleCases);
+    objC2D.drawImage(objJoueur.animation.image, ((objJoueur.intPositionX)*intTailleCases)+objJoueur.fltOffsetX,((objJoueur.intPositionY)*intTailleCases)+objJoueur.fltOffsetY,intTailleCases,intTailleCases);
     //Garde
     tabObjGardien.forEach(element => {
  
