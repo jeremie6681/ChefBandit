@@ -1016,12 +1016,15 @@ function mettreAjourGardes(){
                             if (tabDeplacement[0]!=null){
                                 //savoir si le gardien doit tomber dans le trou
                                 if (tableau[tabObjGardien[i].intPositionX-1][tabObjGardien[i].intPositionY]==5){
+                                    tabObjGardien[i]
                                     tabObjGardien[i].intPositionY++;
                                     tabObjGardien[i].fltOffsetX = 0;
                                     tabObjGardien[i].fltOffsetY = 0;
                                     tabObjGardien[i].tabDirection = [0,0];
                                     objSons.gardeTombeTrou.play();
                                     tabObjGardien[i].booBloquee = true;
+                                    tabObjGardien[i].intPositionXFiniAnimation =tabObjGardien[i].intPositionX;
+                                    tabObjGardien[i].intPositionYFiniAnimation =tabObjGardien[i].intPositionY;
                                 }
                                 //colision entre le garde et lode
                                 else if ((tabDeplacement[0].intX+1==objJoueur.intPositionX&&tabDeplacement[0].intY+1==objJoueur.intPositionY)){
