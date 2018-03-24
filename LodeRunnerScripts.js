@@ -62,10 +62,9 @@ class Personnage {
         this.booChuteLibre = false;
         this.booBloquee = false;
         this.dateHeureTombeTrou = null;
-        this.tabDirection =[-1,0];
+        this.tabDirection =[0,0];
         this.booAnimationEnCour = false;
-        this.intPositionXFiniAnimation = x;
-        this.intPositionYFiniAnimation = y;
+        
         this.fltOffsetX= 0;
         this.fltOffsetY= 0;
        // this.booDirection = false; //Pour les animations, Gauche -> True / Droit -> false
@@ -97,6 +96,8 @@ class Personnage {
             this.intPositionY = y;
             this.animation= objAnimationsGarde.immobileGarde;
         }
+        this.intPositionXFiniAnimation = this.intPositionX;
+        this.intPositionYFiniAnimation = this.intPositionY;
     }
 
     estSurPlateForme() {
@@ -119,6 +120,7 @@ class Personnage {
     }
 
     estEnChuteLibre() {
+        console.log(this.intPositionX + " x " + this.intPositionY + " Y");
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
         return this.booChuteLibre || (tableau[this.intPositionX - 1][this.intPositionY] == 5) || (tableau[this.intPositionX - 1][this.intPositionY] == 7);
@@ -159,6 +161,8 @@ class Personnage {
     deplacement(intFuturX,intFuturY) {
         this.intPositionXFiniAnimation += intFuturX;
         this.intPositionYFiniAnimation += intFuturY;
+        this.booAnimationEnCour = true;
+        this.booBloquee = true;
         
         //permet de mettre a jour la direction dans laquelle lode se deplace 
         if (intFuturX!=0||intFuturY!=0){
@@ -508,11 +512,12 @@ function effacerDessin() {
 function mettreAjourAnimation() {
   //  var dd = new Date();
     mettreAJourTrou();
-    personnageEnChuteLibre();
+    
     mettreAJourPointage();
-    mettreAjourAnimationLode();
+    mettreAJourJoueur();
     mettreAjourGardes();
     mettreAJourLingo();
+    personnageEnChuteLibre();
     mettreAJourNiveau();
     //console.log(objJoueur.tabDirection)
    // console.log(Date.now()-dd+" milisecondes (fin de mise a jour)  -----------------------");
@@ -522,11 +527,18 @@ function mettreAJourJoueur() {
     if ((Math.abs(objJoueur.fltOffsetX).toFixed(3) == 30.000) || (Math.abs(objJoueur.fltOffsetY).toFixed(3) == 30.000)) {
         objJoueur.intPositionX = objJoueur.intPositionXFiniAnimation;
         objJoueur.intPositionY = objJoueur.intPositionYFiniAnimation;
+        objJoueur.fltOffsetX = 0;
+        objJoueur.fltOffsetY = 0;
         objJoueur.booAnimationEnCour = false;
         objJoueur.booBloquee = false; //Peut etre faire d autre validation genre trou ....
     }
     
-    if(objJoueur.booAnimationEnCour) {
+    if(objJoueur.booAnimationEnCour && (objJoueur.fltOffsetX == 0) && (objJoueur.fltOffsetY == 0)) {
+        mettreAjourAnimationLode();
+        objJoueur.fltOffsetX += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[0];
+        objJoueur.fltOffsetY += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[1];
+    }
+    else if(objJoueur.booAnimationEnCour){
         objJoueur.fltOffsetX += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[0];
         objJoueur.fltOffsetY += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[1];
     }
