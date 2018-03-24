@@ -277,24 +277,24 @@ function initAnimationsGardes(){
     objImageCourrirDroiteOR.src = 'sprites/garde/gardeCourrirDroite1OR.png';
 
     objAnimationsGarde = new Object();
-    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(60,objImageCourrirDroite)
-    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(60,objImageCourrirGauche)
-    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(60,objImageAnimEchl1)
-    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(60,objImageAnimEchl2)
-    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(60,objImageBarreDroite)
-    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(60,objImageBarreGauche)
-    objAnimationsGarde.tomberGarde =  construireAnimationSprite(60,objImageTomber)
-    objAnimationsGarde.immobileGarde= construireAnimationSprite(60,objImageDefault)
+    objAnimationsGarde.courrirDroiteGarde = construireAnimationSprite(80,objImageCourrirDroite)
+    objAnimationsGarde.courrirGaucheGarde =  construireAnimationSprite(80,objImageCourrirGauche)
+    objAnimationsGarde.monterEchelleGarde =   construireAnimationSprite(80,objImageAnimEchl1)
+    objAnimationsGarde.descendreEchelleGarde =    construireAnimationSprite(80,objImageAnimEchl2)
+    objAnimationsGarde.barreDroiteGarde = construireAnimationSprite(80,objImageBarreDroite)
+    objAnimationsGarde.barreGaucheGarde=  construireAnimationSprite(80,objImageBarreGauche)
+    objAnimationsGarde.tomberGarde =  construireAnimationSprite(80,objImageTomber)
+    objAnimationsGarde.immobileGarde= construireAnimationSprite(80,objImageDefault)
 
     //si ont de l'or
-    objAnimationsGarde.courrirDroiteGardeOR = construireAnimationSprite(60,objImageCourrirDroiteOR)
-    objAnimationsGarde.courrirGaucheGardeOR =  construireAnimationSprite(60,objImageCourrirGaucheOR)
-    objAnimationsGarde.monterEchelleGardeOR =   construireAnimationSprite(60,objImageAnimEchl1OR)
-    objAnimationsGarde.descendreEchelleGardeOR =    construireAnimationSprite(60,objImageAnimEchl2OR)
-    objAnimationsGarde.barreDroiteGardeOR = construireAnimationSprite(60,objImageBarreDroiteOR)
-    objAnimationsGarde.barreGaucheGardeOR=  construireAnimationSprite(60,objImageBarreGaucheOR)
-    objAnimationsGarde.tomberGardeOR =  construireAnimationSprite(60,objImageTomberOR)
-    objAnimationsGarde.immobileGardeOR= construireAnimationSprite(60,objImageDefaultOR)
+    objAnimationsGarde.courrirDroiteGardeOR = construireAnimationSprite(80,objImageCourrirDroiteOR)
+    objAnimationsGarde.courrirGaucheGardeOR =  construireAnimationSprite(80,objImageCourrirGaucheOR)
+    objAnimationsGarde.monterEchelleGardeOR =   construireAnimationSprite(80,objImageAnimEchl1OR)
+    objAnimationsGarde.descendreEchelleGardeOR =    construireAnimationSprite(80,objImageAnimEchl2OR)
+    objAnimationsGarde.barreDroiteGardeOR = construireAnimationSprite(80,objImageBarreDroiteOR)
+    objAnimationsGarde.barreGaucheGardeOR=  construireAnimationSprite(80,objImageBarreGaucheOR)
+    objAnimationsGarde.tomberGardeOR =  construireAnimationSprite(80,objImageTomberOR)
+    objAnimationsGarde.immobileGardeOR= construireAnimationSprite(80,objImageDefaultOR)
 
 }
 //différentes images pour les 'animations' de lode
@@ -323,13 +323,13 @@ function initAnimationsLode(){
 
 
     objAnimationsLode = new Object();
-    objAnimationsLode.courrirDroiteLode = construireAnimationSprite(30,objImageCourrirDroite)
-    objAnimationsLode.courrirGaucheLode =  construireAnimationSprite(30,objImageCourrirGauche)
-    objAnimationsLode.echelleLode =   construireAnimationSprite(30,objImageEchelleLode)
-    objAnimationsLode.barreDroiteLode = construireAnimationSprite(30,objImageBarreDroite)
-    objAnimationsLode.barreGaucheLode=  construireAnimationSprite(30,objImageBarreGauche)
-    objAnimationsLode.tomberLode =  construireAnimationSprite(30,objImageTomber)
-    objAnimationsLode.immobileLode= construireAnimationSprite(30,objImageDefault)
+    objAnimationsLode.courrirDroiteLode = construireAnimationSprite(20,objImageCourrirDroite)
+    objAnimationsLode.courrirGaucheLode =  construireAnimationSprite(20,objImageCourrirGauche)
+    objAnimationsLode.echelleLode =   construireAnimationSprite(20,objImageEchelleLode)
+    objAnimationsLode.barreDroiteLode = construireAnimationSprite(20,objImageBarreDroite)
+    objAnimationsLode.barreGaucheLode=  construireAnimationSprite(20,objImageBarreGauche)
+    objAnimationsLode.tomberLode =  construireAnimationSprite(20,objImageTomber)
+    objAnimationsLode.immobileLode= construireAnimationSprite(20,objImageDefault)
 }
 
 function initTextures(){
