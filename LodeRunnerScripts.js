@@ -11,8 +11,8 @@ var objPointage = null;
 var objCycleAnimation = null;
 var ObjAnimationsGarde= null;
 var ObjAnimationsLode = null;
+
 var objDateHeureDepart = null;
-var tempsDerdiermv = 0;
 
 const intTailleCases = 30 ;
 const intTailleTableauX = 28;
@@ -62,7 +62,7 @@ class Personnage {
         this.booChuteLibre = false;
         this.booBloquee = false;
         this.dateHeureTombeTrou = null;
-        
+        this.tabDirection =[0,0];
         this.booAnimationEnCour = false;
        // this.booDirection = false; //Pour les animations, Gauche -> True / Droit -> false
 
@@ -72,6 +72,7 @@ class Personnage {
             this.intPositionX = 14;
             this.intPositionY = 15;
             this.couleur = 'white';
+            this.animation= objAnimationsLode.immobileLode;
         }
         //Personnage Gardien
         else {
@@ -95,7 +96,6 @@ class Personnage {
             this.fltOffsetX= 0;
             this.fltOffsetY= 0;
             this.animation= objAnimationsGarde.immobileGarde;
-            this.tabDirection =[0,0];
         }
     }
 
@@ -147,6 +147,11 @@ class Personnage {
 
         if(booFaitDeplacement && booPossible && !this.booChuteLibre && !this.booBloquee) {
             this.deplacement(intFuturX,intFuturY);
+            this.tabDirection[intFuturX-this.intPositionX,intFuturY-this.intPositionY]
+            
+        }
+        if (this.booChuteLibre){
+            this.tabDirection=[0,1]
         }
 
         return booPossible;
@@ -201,6 +206,7 @@ function initAnimation(Canvas){
     initSons();
     initPointage();
     initTextures();
+    initAnimationsLode();
     initAnimationsGardes();
     initPersonnage();
     initMurs();
@@ -287,10 +293,8 @@ function initAnimationsGardes(){
 function initAnimationsLode(){
 
 
-    var objImageAnimEchl1 = new Image();
-    objImageAnimEchl1.src = 'sprites/lode/lodeEchelle.png';
-
-
+    var objImageEchelleLode = new Image();
+    objImageEchelleLode.src = 'sprites/lode/lodeEchelle.png';
 
     var objImageDefault = new Image();
     objImageDefault.src = 'sprites/lode/lodeImmobile.png'; 
@@ -312,14 +316,13 @@ function initAnimationsLode(){
 
 
     objAnimationsLode = new Object();
-    objAnimationsLode.courrirDroiteGarde = construireAnimationSprite(60,objImageCourrirDroite)
-    objAnimationsLode.courrirGaucheGarde =  construireAnimationSprite(60,objImageCourrirGauche)
-    objAnimationsLode.monterEchelleGarde =   construireAnimationSprite(60,objImageAnimEchl1)
-    objAnimationsLode.descendreEchelleGarde =    construireAnimationSprite(60,objImageAnimEchl1)
-    objAnimationsLode.barreDroiteGarde = construireAnimationSprite(60,objImageBarreDroite)
-    objAnimationsLode.barreGaucheGarde=  construireAnimationSprite(60,objImageBarreGauche)
-    objAnimationsLode.tomberGarde =  construireAnimationSprite(60,objImageTomber)
-    objAnimationsLode.immobileGarde= construireAnimationSprite(60,objImageDefault)
+    objAnimationsLode.courrirDroiteLode = construireAnimationSprite(30,objImageCourrirDroite)
+    objAnimationsLode.courrirGaucheLode =  construireAnimationSprite(30,objImageCourrirGauche)
+    objAnimationsLode.echelleLode =   construireAnimationSprite(30,objImageEchelleLode)
+    objAnimationsLode.barreDroiteLode = construireAnimationSprite(30,objImageBarreDroite)
+    objAnimationsLode.barreGaucheLode=  construireAnimationSprite(30,objImageBarreGauche)
+    objAnimationsLode.tomberLode =  construireAnimationSprite(30,objImageTomber)
+    objAnimationsLode.immobileLode= construireAnimationSprite(30,objImageDefault)
 }
 
 function initTextures(){
@@ -498,14 +501,16 @@ function effacerDessin() {
     
 // Pour mettre à jour l'animation
 function mettreAjourAnimation() {
-    var dd = new Date();
+  //  var dd = new Date();
     mettreAJourTrou();
     personnageEnChuteLibre();
     mettreAJourPointage();
+    mettreAjourAnimationLode();
     mettreAjourGardes();
     mettreAJourLingo();
     mettreAJourNiveau();
-    console.log(Date.now()-dd+" milisecondes (fin de mise a jour)  -----------------------");
+    console.log(objJoueur.tabDirection)
+   // console.log(Date.now()-dd+" milisecondes (fin de mise a jour)  -----------------------");
 }
 
 //Pour l'instant c'est seulement le chronometre qui est mis à jour ...
@@ -816,9 +821,9 @@ function dessinerMurs(){
 
 function dessinePersonnage() {
     //Joueur
-    objC2D.fillStyle='white';
-    objC2D.fillRect(((objJoueur.intPositionX - 1)*intTailleCases)+30,((objJoueur.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
-
+    //objC2D.fillStyle='white';
+    //objC2D.fillRect(((objJoueur.intPositionX - 1)*intTailleCases)+30,((objJoueur.intPositionY - 1)*intTailleCases)+30,intTailleCases,intTailleCases);
+    objC2D.drawImage(objJoueur.animation.image, ((objJoueur.intPositionX)*intTailleCases),((objJoueur.intPositionY)*intTailleCases),intTailleCases,intTailleCases);
     //Garde
     tabObjGardien.forEach(element => {
  
@@ -1230,7 +1235,37 @@ function mettreAjourAnimationGarde(){
         }
     }
 }
-
 }
-
+function mettreAjourAnimationLode(){
+    if (objJoueur.tabDirection[1]==-1){
+        objJoueur.animation=objAnimationsLode.echelleLode
+    }
+    else if (objJoueur.tabDirection[1]==1){
+        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==3){
+            objJoueur.animation=objAnimationsLode.EchelleLode
+        }
+        else{
+            objJoueur.animation=objAnimationsLode.tomberLode
+        }
+    }
+    else if (objJoueur.tabDirection[0] ==-1){
+        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==2){
+            objJoueur.animation=objAnimationsLode.barreGaucheLode
+        }
+        else{
+            objJoueur.animation=objAnimationsLode.courrirGaucheLode
+        }
+    }
+    else if (objJoueur.tabDirection[0]==1){
+        if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==2){
+            objJoueur.animation=objAnimationsLode.barreDroiteLode
+        }
+        else{
+            objJoueur.animation=objAnimationsLode.courrirDroiteLode
+        }
+    }
+    else {
+            objJoueur.animation=objAnimationsLode.immobileLode
+    }
+}
 
