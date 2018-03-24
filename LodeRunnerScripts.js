@@ -62,7 +62,7 @@ class Personnage {
         this.booChuteLibre = false;
         this.booBloquee = false;
         this.dateHeureTombeTrou = null;
-        this.tabDirection =[-1,0];
+        this.tabDirection =[0,0];
         this.booAnimationEnCour = false;
         this.intPositionXFiniAnimation = x;
         this.intPositionYFiniAnimation = y;
@@ -162,8 +162,8 @@ class Personnage {
         
         //permet de mettre a jour la direction dans laquelle lode se deplace 
         if (intFuturX!=0||intFuturY!=0){
-        this.tabDirection=[intFuturX,intFuturY]
-        console.log(intFuturX+'     '+intFuturY);
+            this.tabDirection=[intFuturX,intFuturY]
+            console.log(intFuturX+'     '+intFuturY);
         }
     }
 
@@ -221,7 +221,7 @@ function initAnimation(Canvas){
     dessiner();
     animer();
 }
-
+//differentes images pour les 'animations' des gardes
 function initAnimationsGardes(){
 //load img sans or
     var objImageAnimEchl1 = new Image();
@@ -295,8 +295,8 @@ function initAnimationsGardes(){
     objAnimationsGarde.immobileGardeOR= construireAnimationSprite(60,objImageDefaultOR)
 
 }
+//différentes images pour les 'animations' de lode
 function initAnimationsLode(){
-
 
     var objImageEchelleLode = new Image();
     objImageEchelleLode.src = 'sprites/lode/lodeEchelle.png';
@@ -403,7 +403,7 @@ function initPersonnage() {
 
     tabObjGardien = new Array();
     //Gardien
-    for(var intIndex = 0; intIndex<(objPointage.niveau + 2); intIndex++) {//+2
+    for(var intIndex = 0; intIndex<(objPointage.niveau + 2); intIndex++) {//+2 pour le 
         tabObjGardien.push(new Personnage(false));
     }
 }
@@ -417,6 +417,7 @@ function initPointage(){
     objPointage.tempsNiveauSeconde = ajouteZeros(0);
     objPointage.tempsNiveauMinute = ajouteZeros(0);
 }
+
 function initSons() {
     objSons = new Object();
 
@@ -716,7 +717,7 @@ function mettreAJourLingo() {
     });
 }
 
-//Peut surement etre rasembler avec pointage ...
+
 function mettreAJourNiveau() {
     //Si tout les lingos ramassés
     if ((objJoueur.intNbLingoOr == 6) && (objPointage.niveau < 10) && (tableau[18][0] == 0)) {
@@ -739,7 +740,8 @@ function echelleSortie(booAjoutRetire) {
         tableau[18][i] = (booAjoutRetire ? 3 : 0);
     }
 }
-
+//remet le niveau à son état initial, 
+//à utiliser quand lode meurt
 function reinitialiseNiveau() {
     objDateHeureDepart = null;
     initPersonnage();
@@ -1044,7 +1046,7 @@ function trouverVoisins(nodeActuelle){
     }
     return tabVoisins;
 }
-
+//retourne true si le voisin à déja été visité
 function voisinDejaVisite(closeSet,voisin){
     var booDejaVisite = false ;
     closeSet.forEach(function(e){
@@ -1052,7 +1054,8 @@ function voisinDejaVisite(closeSet,voisin){
     });
     return booDejaVisite;
 }
-
+//retoure un aproximation de la distance entre une node et le but
+//ici une formule de distance entre 2 points est utilisée 
 function calculerHeuristique(voisin,but){
     return (Math.abs(but.intX-voisin.intX)+Math.abs(but.intY-voisin.intY))
 }
@@ -1115,7 +1118,7 @@ function mettreAjourGardes(){
                     }
                 }
             }
-
+    //mettre à jour les donées nescesaires aux animations
       var intIndex;
             var intDimentionTableauGarde = tabObjGardien.length;
             for(intIndex = 0; intIndex < intDimentionTableauGarde;intIndex++) {
@@ -1188,7 +1191,7 @@ function construireAnimationSprite(intDureeAnimation,image, intId){
 function mettreAjourAnimationGarde(){
     
     for(var i = 0 ;i<tabObjGardien.length;i++){
-        //afficher le gardiern diferament si il a de l'or
+        //afficher le gardiern différament si il a de l'or
        if (tabObjGardien[i].intNbLingoOr>0){
          if (tabObjGardien[i].tabDirection[1]==-1){
                 tabObjGardien[i].animation=objAnimationsGarde.monterEchelleGardeOR
@@ -1221,6 +1224,7 @@ function mettreAjourAnimationGarde(){
                 tabObjGardien[i].animation=objAnimationsGarde.immobileGardeOR
             }
     }
+    //gardes sans or 
     else {
         if (tabObjGardien[i].tabDirection[1]==-1){
             tabObjGardien[i].animation=objAnimationsGarde.monterEchelleGarde
