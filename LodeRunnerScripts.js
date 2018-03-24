@@ -118,7 +118,6 @@ class Personnage {
     }
 
     estEnChuteLibre() {
-        console.log(this.intPositionX + " x " + this.intPositionY + " Y");
         this.booChuteLibre = (((tableau[this.intPositionX - 1][this.intPositionY] == 0) || (tableau[this.intPositionX - 1][this.intPositionY] == 2)) && (tableau[this.intPositionX - 1][this.intPositionY - 1] != 2));
         
         return this.booChuteLibre || (tableau[this.intPositionX - 1][this.intPositionY] == 5) || (tableau[this.intPositionX - 1][this.intPositionY] == 7);
@@ -512,23 +511,25 @@ function mettreAjourAnimation() {
     mettreAJourTrou();
     
     mettreAJourPointage();
+    personnageEnChuteLibre();
     mettreAJourJoueur();
     mettreAjourGardes();
     mettreAJourLingo();
-    personnageEnChuteLibre();
+    
     mettreAJourNiveau();
 }
 
 function mettreAJourJoueur() {
     if ((Math.abs(objJoueur.fltOffsetX).toFixed(3) == 30.000) || (Math.abs(objJoueur.fltOffsetY).toFixed(3) == 30.000)) {
         objJoueur.intPositionX = objJoueur.intPositionXFiniAnimation;
-        objJoueur.intPositionY = objJoueur.intPositionYFiniAnimation;
+        objJoueur.intPositionY = objJoueur.intPositionYFiniAnimation;   
         objJoueur.fltOffsetX = 0;
         objJoueur.fltOffsetY = 0;
         objJoueur.booAnimationEnCour = false;
         objJoueur.booBloquee = false; //Peut etre faire d autre validation genre trou ....
     }
     
+
     if(objJoueur.booAnimationEnCour && (objJoueur.fltOffsetX == 0) && (objJoueur.fltOffsetY == 0)) {
         mettreAjourAnimationLode();
         objJoueur.fltOffsetX += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[0];
@@ -611,6 +612,70 @@ function mettreAJourTrou() {
 }
 
 
+<<<<<<< HEAD
+=======
+function refermeToutLesTrous() {
+    tabObjTrou.forEach(element => {
+        tableau[element.intPositionX - 1][element.intPositionY - 1] = 1;
+    });
+}
+
+//Chute libre et tomber dans un trou ...
+function personnageEnChuteLibre() {
+    //Joueur
+    if (objJoueur.estEnChuteLibre() && !objJoueur.booAnimationEnCour){
+        objJoueur.booBloquee = true;
+        objJoueur.deplacement(0,1);
+        objSons.tomber.play();                     
+    }
+    else if (objJoueur.estDansTrou(true))
+        tomberDansTrou(objJoueur);
+    else{
+        objSons.tomber.pause();
+        objSons.tomber.currentTime = 0;
+    }
+
+    tabObjGardien.forEach(objGardien => {
+        
+        if (objGardien.estDansTrou(true)) {
+            tomberDansTrou(objGardien);
+        }
+        else if (objGardien.estDansTrou(false)) {
+            objGardien.booBloquee = true;
+        }
+    });
+}
+
+//Vérifie si la position est occupé par un autre personnage
+function emplacementSansPersonnage(intX,intY) {
+    var intIndexGardeSiPresent = tabObjGardien.findIndex(element => ((element.intPositionX == intX) && (element.intPositionY == intY)));
+
+    return (!((objJoueur.intPositionX == intX) && (objJoueur.intPositionY == intY)) && (intIndexGardeSiPresent == -1));
+}
+
+function tomberDansTrou(objPersonnage) {
+
+    tabObjTrou.forEach(element => {
+        if ((objPersonnage.intPositionX == element.intPositionX) && (objPersonnage.intPositionY == element.intPositionY)) {
+            objPersonnage.dateHeureTombeTrou = new Date();
+            element.objPersonnageTrou = objPersonnage;
+            tableau[element.intPositionX - 1][element.intPositionY - 1] = 6;
+
+            if (objPersonnage.intID != 20)
+                objPointage.score += 75;
+            else {
+                objPersonnage.booBloquee = true;
+            }
+
+            //Perte lingo si tombe dans vide
+            if (objPersonnage.intNbLingoOr > 0 && objPersonnage.intID != 20) {
+                objPersonnage.intNbLingoOr--;
+                gestionStockLingo(true, element.intPositionX, element.intPositionY - 1 );
+            }
+        }
+    });
+}
+>>>>>>> a620a48f2360ee266fb5273e60559d94dcdd8dba
 
 function mettreAJourLingo() {
     //Joueur
