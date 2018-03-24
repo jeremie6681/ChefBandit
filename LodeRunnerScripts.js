@@ -157,8 +157,8 @@ class Personnage {
     }
 
     deplacement(intFuturX,intFuturY) {
-        this.intPositionX += intFuturX;
-        this.intPositionY += intFuturY;
+        this.intPositionXFiniAnimation += intFuturX;
+        this.intPositionYFiniAnimation += intFuturY;
         this.tabDirection[intFuturX,intFuturY]
     }
 
@@ -511,6 +511,20 @@ function mettreAjourAnimation() {
     mettreAJourNiveau();
     console.log(objJoueur.tabDirection)
    // console.log(Date.now()-dd+" milisecondes (fin de mise a jour)  -----------------------");
+}
+
+function mettreAJourJoueur() {
+    if ((Math.abs(objJoueur.fltOffsetX).toFixed(3) == 30.000) || (Math.abs(objJoueur.fltOffsetY).toFixed(3) == 30.000)) {
+        objJoueur.intPositionX = objJoueur.intPositionXFiniAnimation;
+        objJoueur.intPositionY = objJoueur.intPositionYFiniAnimation;
+        objJoueur.booAnimationEnCour = false;
+        objJoueur.booBloquee = false; //Peut etre faire d autre validation genre trou ....
+    }
+    
+    if(objJoueur.booAnimationEnCour) {
+        objJoueur.fltOffsetX += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[0];
+        objJoueur.fltOffsetY += (intTailleCases/objJoueur.animation.intDureeAnimation)*objJoueur.tabDirection[1];
+    }
 }
 
 //Pour l'instant c'est seulement le chronometre qui est mis à jour ...
