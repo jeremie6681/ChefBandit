@@ -64,6 +64,10 @@ class Personnage {
         this.dateHeureTombeTrou = null;
         this.tabDirection =[0,0];
         this.booAnimationEnCour = false;
+        this.intPositionXFiniAnimation = x;
+        this.intPositionYFiniAnimation = y;
+        this.fltOffsetX= 0;
+        this.fltOffsetY= 0;
        // this.booDirection = false; //Pour les animations, Gauche -> True / Droit -> false
 
         //Personnage Joueur
@@ -91,10 +95,6 @@ class Personnage {
             
             this.intPositionX = x;
             this.intPositionY = y;
-            this.intPositionXFiniAnimation = x;
-            this.intPositionYFiniAnimation = y;
-            this.fltOffsetX= 0;
-            this.fltOffsetY= 0;
             this.animation= objAnimationsGarde.immobileGarde;
         }
     }
@@ -147,7 +147,6 @@ class Personnage {
 
         if(booFaitDeplacement && booPossible && !this.booChuteLibre && !this.booBloquee) {
             this.deplacement(intFuturX,intFuturY);
-            this.tabDirection[intFuturX-this.intPositionX,intFuturY-this.intPositionY]
             
         }
         if (this.booChuteLibre){
@@ -160,6 +159,7 @@ class Personnage {
     deplacement(intFuturX,intFuturY) {
         this.intPositionX += intFuturX;
         this.intPositionY += intFuturY;
+        this.tabDirection[intFuturX,intFuturY]
     }
 
     //true -> gauche / false -> droite
@@ -1242,7 +1242,7 @@ function mettreAjourAnimationLode(){
     }
     else if (objJoueur.tabDirection[1]==1){
         if(tableau[objJoueur.intPositionX-1][objJoueur.intPositionY-1]==3){
-            objJoueur.animation=objAnimationsLode.EchelleLode
+            objJoueur.animation=objAnimationsLode.echelleLode
         }
         else{
             objJoueur.animation=objAnimationsLode.tomberLode
